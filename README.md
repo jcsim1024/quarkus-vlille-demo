@@ -41,4 +41,4 @@ Project current packaged weight:
 		- `./mvnw compile quarkus:dev`
 - Package the app:
 	- Then mvn package with TestSkip (I'm not using them yet).<br/>
-	- `docker build -f src/main/docker/Dockerfile.jvm -t quarkus/getting-started-jvm .`   <br/>
+	- `docker build -f src/main/docker/Dockerfile.jvm -t quarkus/getting-started-jvm .` (centos without dev tools)  <br/>
