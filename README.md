@@ -1,8 +1,8 @@
 # quarkus-vlille-demo
-**This is a small quakus demo that will display VLille bike stations using OpenData-MEL (Metropole Européenne Lilloise) <a action="https://opendata.lillemetropole.fr/explore/dataset/vlille-realtime/api/">Vlille-API</a> <br/>**
-![alt text](https://github.com/jcsim1024/quarkus-vlille-demo/edit/master/src/main/resources/META-INF/resources/images/Annotation.png)
+**This is a small quakus demo that will display VLille bike stations using OpenData-MEL (Metropole Européenne Lilloise) <a href="https://opendata.lillemetropole.fr/explore/dataset/vlille-realtime/api/">Vlille-API</a> <br/>** <br/>
+<img src="/src/main/resources/META-INF/resources/images/Annotation.png" width="400" height="300" /> <br>
 
-Currently it only displays the station's name and its available bike number 
+Currently I have setted it to only display 2 stations, their name and available bike number 
   
 ### [centos-quarkus-maven](https://github.com/quarkusio/quarkus-images "https://github.com/quarkusio/quarkus-images"):   
 - Contains all the necessary and pre-configured tools to build and develop the project. 
@@ -17,19 +17,20 @@ Project current packaged weight:
 
 
 
-### Install step by step: 
+### Run step by step: 
 
 - Run with docker:<br/>
 	- `docker pull jcsim/quarkus-vlille:latest`
-	- `docker run -i --rm -p 8082:8080 quarkus/getting-started-jvm` <br/>   
+	- `docker run -i --rm -p 8082:8080 jcsim/quarkus-vlille` <br/>   
 	- Go to http://localhost:8082/ <br/>
 
 - Run with kubernetes:<br/>
 	- `docker pull jcsim/quarkus-vlille:latest`
 	- `kubectl create deployment quarkus-deploy --image=jcsim/quarkus-vlille`
-	- expose service and port 8080<br/>
+	- expose service and port XXXX->8080<br/>
+	- Go to http://localhost:XXXX/ <br/>
 
-
+### Intall step by step: 
 - Install with docker:<br/>
 	- Pull centos-quarkus-maven with docker.<br/>
 	- git clone the project here its _d:/SharedFolder/projet_vlille/vlille-jc_
@@ -39,5 +40,5 @@ Project current packaged weight:
 	- Intall dependencies and run the app 
 		- `./mvnw compile quarkus:dev`
 - Package the app:
-	- Then mvn package with TestSkip (I'm not using them).<br/>
+	- Then mvn package with TestSkip (I'm not using them yet).<br/>
 	- `docker build -f src/main/docker/Dockerfile.jvm -t quarkus/getting-started-jvm .`   <br/>
