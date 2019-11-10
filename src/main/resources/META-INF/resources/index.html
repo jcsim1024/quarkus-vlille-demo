@@ -100,7 +100,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"/>
     <!-- Load AngularJS -->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
     <script type="text/javascript">
     
           </script>
@@ -134,19 +134,27 @@
     </div>
 </div>
 
-<div ng-app="stationApp" ng-controller="StationListCtrl" style="margin-top: 10px">
-        <table class="table-bordered ">
+
+
+<div ng-app="stationApp" ng-controller="StationListCtrl" class=".form-group" style="margin: 15px">
+        <div class="row">
+	        <label class="col-6 col-xs-12">Chercher: 
+	        	<input ng-model="searchText" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="RUE ROYAL , FLANDRE...">
+	       		<small id="emailHelp" class="form-text text-muted">Search with a name, a city or anything else</small>
+	       	</label>
+       	</div>
+		<table class="table-bordered ">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">V'Lille nom</th>
-                    <th scope="col">Nombre de velos dispos</th>
-                    <th scope="col">Bikes</th>
-                    <th scope="col">Free</th>
+                    <th scope="col">V'Lille name</th>
+                    <th scope="col">Number of bikes</th>
+                    <th scope="col"><!-- Bikes --></th>
+                    <th scope="col"><!-- Free --></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="station in stations">
+                <tr ng-repeat="station in stations  | filter:searchText ">
                     <td scope="row"><!-- {{station.name}} --></td>
                     <td>{{station.nom}}</td>
                     <td>{{station.nbvelosdispo}}</td>
