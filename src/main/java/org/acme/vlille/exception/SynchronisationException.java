@@ -7,6 +7,10 @@ package org.acme.vlille.exception;
 public class SynchronisationException extends Exception {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4223503917552714664L;
+	/**
      * Default constructor.
      */
     public SynchronisationException() {
