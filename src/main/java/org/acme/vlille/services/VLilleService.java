@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class VLilleService {
 
+	private static final HashMap<String, StationDTO> stations = new HashMap<>();
+
 	Logger logger = LoggerFactory.getLogger(VLilleService.class);
 
 	@ConfigProperty(name = "vlillehttps", defaultValue = "")
@@ -46,7 +48,6 @@ public class VLilleService {
 		// Check if we have stations in the map...
 		// Here we will later externalize the cache from the app in order to make the
 		// hash map loading faster
-		final HashMap<String, StationDTO> stations = new HashMap<>();
 
 		if (stations.size() == 0) {
 			final List<StationDTO> loadedStations = this.performSynchronisation();
