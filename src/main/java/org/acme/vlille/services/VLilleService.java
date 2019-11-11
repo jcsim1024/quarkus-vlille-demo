@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Jean-Charles
- * 
- * 
+ *
+ *
  */
 @Service
 public class VLilleService {
@@ -36,7 +36,7 @@ public class VLilleService {
 
 	/**
 	 * Find all stations status.
-	 * 
+	 *
 	 * @return a list of stations.
 	 * @throws SynchronisationException if we can't synchronise the station list
 	 *                                  with remote API.
@@ -46,7 +46,7 @@ public class VLilleService {
 		// Check if we have stations in the map...
 		// Here we will later externalize the cache from the app in order to make the
 		// hash map loading faster
-		final HashMap<String, StationDTO> stations = new HashMap<String, StationDTO>();
+		final HashMap<String, StationDTO> stations = new HashMap<>();
 
 		if (stations.size() == 0) {
 			final List<StationDTO> loadedStations = this.performSynchronisation();
@@ -57,7 +57,7 @@ public class VLilleService {
 
 			stationResponseDTO.setStations(loadedStations);
 		} else {
-			stationResponseDTO.setStations(new ArrayList<StationDTO>(stations.values()));
+			stationResponseDTO.setStations(new ArrayList<>(stations.values()));
 		}
 
 		return stationResponseDTO;
@@ -65,7 +65,7 @@ public class VLilleService {
 
 	/**
 	 * Read data with vLille API
-	 * 
+	 *
 	 * @return a list of stations.
 	 * @throws SynchronisationException if we can't synchronise the station list
 	 *                                  with remote API.
@@ -76,13 +76,14 @@ public class VLilleService {
 		final ResponseEntity<String> responseStr = restTemplate.exchange(vlilleWs, HttpMethod.GET, null, String.class);
 
 		JsonNode root = null;
-		List<StationDTO> listeStation = new ArrayList<StationDTO>();
-		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		final List<StationDTO> listeStation = new ArrayList<>();
+		final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+				false);
 
 		try {
 
 			root = mapper.readTree(responseStr.getBody());
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			logger.error(e.toString());
 			throw new SynchronisationException(e.toString());
 
@@ -93,11 +94,11 @@ public class VLilleService {
 		return listeStation;
 	}
 
-	private void helperJsonNodeToDto(JsonNode root, List<StationDTO> listeStation) {
-		JsonNode temp = root.get("records");
+	private void helperJsonNodeToDto(final JsonNode root, final List<StationDTO> listeStation) {
+		final JsonNode temp = root.get("records");
 		for (int i = 0; i < temp.size(); i++) {
-			JsonNode tmpJsSta = temp.get(i).get("fields");
-			StationDTO tmpSta = new StationDTO();
+			final JsonNode tmpJsSta = temp.get(i).get("fields");
+			final StationDTO tmpSta = new StationDTO();
 			tmpSta.setNbvelosdispo(tmpJsSta.get("nbvelosdispo").toString());
 			tmpSta.setNom(tmpJsSta.get("nom").toString());
 			listeStation.add(tmpSta);
@@ -106,21 +107,21 @@ public class VLilleService {
 
 	/**
 	 * display all members of node
-	 * 
+	 *
 	 * @param root
 	 * @param arrows
 	 */
-	private void recursiveNodeDisplay(JsonNode root, String arrows) {
-		Iterator<String> iterator = root.fieldNames();
+	private void recursiveNodeDisplay(final JsonNode root, final String arrows) {
+		final Iterator<String> iterator = root.fieldNames();
 		while (iterator.hasNext() && !root.isArray()) {
-			String fieldName = iterator.next();
-			JsonNode temp = root.path(fieldName);
+			final String fieldName = iterator.next();
+			final JsonNode temp = root.path(fieldName);
 			logger.info(arrows + fieldName);
 			if (temp.isContainerNode() && !temp.isArray()) {
 				recursiveNodeDisplay(temp, arrows + "---");
 			}
 			if (fieldName.contentEquals("records")) {
-				logger.info("size:"+new Integer(temp.size()).toString());
+				logger.info("size:" + new Integer(temp.size()).toString());
 				for (int i = 0; i < temp.size(); i++) {
 					recursiveNodeDisplay(temp.get(i), arrows + "---");
 					logger.info("--");
