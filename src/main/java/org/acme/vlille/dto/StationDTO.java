@@ -1,16 +1,7 @@
 package org.acme.vlille.dto;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class StationDTO implements Serializable {
 
 	public StationDTO() {
@@ -31,7 +22,7 @@ public class StationDTO implements Serializable {
 		return nom;
 	}
 
-	public void setNom(String nom) {
+	public void setNom(final String nom) {
 		this.nom = nom;
 	}
 
@@ -39,7 +30,7 @@ public class StationDTO implements Serializable {
 		return nbvelosdispo;
 	}
 
-	public void setNbvelosdispo(String nbvelosdispo) {
+	public void setNbvelosdispo(final String nbvelosdispo) {
 		this.nbvelosdispo = nbvelosdispo;
 	}
 
@@ -53,24 +44,31 @@ public class StationDTO implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		StationDTO other = (StationDTO) obj;
+		}
+		final StationDTO other = (StationDTO) obj;
 		if (nbvelosdispo == null) {
-			if (other.nbvelosdispo != null)
+			if (other.nbvelosdispo != null) {
 				return false;
-		} else if (!nbvelosdispo.equals(other.nbvelosdispo))
+			}
+		} else if (!nbvelosdispo.equals(other.nbvelosdispo)) {
 			return false;
+		}
 		if (nom == null) {
-			if (other.nom != null)
+			if (other.nom != null) {
 				return false;
-		} else if (!nom.equals(other.nom))
+			}
+		} else if (!nom.equals(other.nom)) {
 			return false;
+		}
 		return true;
 	}
 

@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import org.acme.vlille.dto.StationResponseDTO;
 import org.acme.vlille.exception.SynchronisationException;
 import org.acme.vlille.services.VLilleService;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

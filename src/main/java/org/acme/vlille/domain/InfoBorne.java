@@ -1,8 +1,5 @@
 package org.acme.vlille.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class InfoBorne {
 	private Station fields;
 

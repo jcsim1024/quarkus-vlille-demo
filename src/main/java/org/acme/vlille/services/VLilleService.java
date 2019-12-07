@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.acme.vlille.domain.InfoBorne;
 import org.acme.vlille.domain.VlilleDataSet;
+import org.acme.vlille.domain.VlilleServiceRestEasy;
 import org.acme.vlille.dto.StationDTO;
 import org.acme.vlille.dto.StationResponseDTO;
 import org.acme.vlille.exception.SynchronisationException;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Jean-Charles
@@ -29,8 +29,9 @@ public class VLilleService {
 
 	Logger logger = LoggerFactory.getLogger(VLilleService.class);
 
-	@ConfigProperty(name = "vlillehttps", defaultValue = "")
-	String vlilleWs;
+	@Inject
+	@RestClient
+	VlilleServiceRestEasy vService;
 
 	/**
 	 * Find all stations status.
@@ -69,19 +70,17 @@ public class VLilleService {
 	 */
 	public List<StationDTO> performSynchronisation() throws SynchronisationException {
 
-		final RestTemplate restTemplate = new RestTemplate();
+		final VlilleDataSet dataSet = vService.getDataSet();
 
-		final ResponseEntity<VlilleDataSet> responseVlille = restTemplate.exchange(vlilleWs, HttpMethod.GET, null,
-				VlilleDataSet.class);
-		final List<StationDTO> listeStation;
-		listeStation = metierVersContrat(responseVlille);
+		List<StationDTO> listeStation;
+		listeStation = metierVersContrat(dataSet);
 		return listeStation;
 	}
 
-	private List<StationDTO> metierVersContrat(final ResponseEntity<VlilleDataSet> responseVlille) {
+	private List<StationDTO> metierVersContrat(final VlilleDataSet dataSet) {
 		final List<StationDTO> listeStation;
 		listeStation = new ArrayList<>();
-		final VlilleDataSet dataSet = responseVlille.getBody();
+
 		final List<InfoBorne> lstinfo = dataSet.getRecords();
 		for (final InfoBorne info : lstinfo) {
 			final StationDTO station = new StationDTO();

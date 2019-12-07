@@ -1,14 +1,10 @@
 package org.acme.vlille.dto;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * Station response DTO.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 public class StationResponseDTO {
 
 	/**
@@ -21,11 +17,11 @@ public class StationResponseDTO {
 		return stations;
 	}
 
-	public void setStations(List<StationDTO> stations) {
+	public void setStations(final List<StationDTO> stations) {
 		this.stations = stations;
 	}
 
-	public void setTime(Long l) {
-		this.time= l;
+	public void setTime(final Long l) {
+		time = l;
 	}
 }
