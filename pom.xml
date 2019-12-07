@@ -41,18 +41,12 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-hibernate-orm-panache</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql</artifactId>
-    </dependency>
+    
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-spring-web</artifactId>
     </dependency>
+    
     
     
     <dependency>
