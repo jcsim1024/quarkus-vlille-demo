@@ -6,7 +6,7 @@ public class VlilleDataSet {
 
 	private Integer nhits;
 
-	private List<InfoBorne> records;
+	private List<Record> records;
 
 	public Integer getNhits() {
 		return nhits;
@@ -21,11 +21,11 @@ public class VlilleDataSet {
 		return "VlilleDataSet [nhits=" + nhits + ", records=" + records + "]";
 	}
 
-	public List<InfoBorne> getRecords() {
+	public List<Record> getRecords() {
 		return records;
 	}
 
-	public void setRecords(final List<InfoBorne> records) {
+	public void setRecords(final List<Record> records) {
 		this.records = records;
 	}
 

@@ -1,0 +1,103 @@
+= Model
+
+
+[plantuml, vlille-demo-model, png]
+....
+@startuml
+package org.acme.vlille.dto {
+	class StationResponseDTO {
+	  * stations <StationDTO>
+	  * time
+	}
+	class StationDTO {
+	  * nom
+	  * nbvelosdispo
+	}
+StationResponseDTO o--o{  StationDTO
+}
+package  org.acme.vlille.domain {
+	
+	entity Station {
+		* nom
+		* nbvelosdispo
+	}
+
+	entity VlilleDataSet {
+		* nhits
+		* records <Record>
+	}
+
+	entity Record  {
+		* fields <Station>
+	}
+VlilleDataSet o--o{ Record
+Station ||--|| Record
+}
+
+
+
+@enduml
+....
+
+== Flow
+
+[plantuml, vlille-demo-flow, png]
+....
+@startuml
+autonumber
+actor "You" as you
+participant "front\nAngularJS" as ft
+participant "back\nQuarkus" as bk
+participant "VLilleApi" as vl
+... Vlille demo app has started ...
+you -> bk: GET localhost:8080
+you <- bk: index.html
+you -> ft: 
+
+note over ft 
+stationApp
+StationListCtrl
+end note
+ft -> bk : GET /api/stations/findALL
+
+activate bk
+note over bk
+findAll()
+performSynchronisation()
+Rest Easy service get dataset 
+end note
+
+bk -> vl :GET https://opendata.lillemetropole.fr/api/records/1.0/search/?\ndataset=vlille-realtime&rows=100&refine.commune=LILLE
+
+note right vl
+"nhits": 110, 
+"parameters": 
+	{"dataset": "vlille-realtime", "refine": {"commune": "LILLE"}, "timezone": "UTC", "rows": 100, "start": 0, "format": "json"},
+"records": [
+	{"datasetid": "vlille-realtime", "recordid": "723289fe50c959f7e63d75b17870762aa8eaddd4", 
+		"fields": {"etat": "EN SERVICE", "etatconnexion": "CONNECTED", "nbvelosdispo": 4, "nbplacesdispo": 14, "commune": "LILLE",
+		 ...}
+	 ...}
+...]
+end note
+
+bk <- vl
+
+note over bk
+Rest Easy json to VlilleDataSet
+metierVersContrat(...) 
+end note
+
+ft <- bk : JSON  StationResponseDTO
+
+
+note over ft
+successCallback()
+display stations 
+end note
+
+@enduml
+....
+
+
+

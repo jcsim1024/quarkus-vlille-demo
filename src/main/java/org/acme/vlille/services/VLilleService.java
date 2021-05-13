@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.acme.vlille.domain.InfoBorne;
+import org.acme.vlille.domain.Record;
 import org.acme.vlille.domain.VlilleDataSet;
 import org.acme.vlille.domain.VlilleServiceRestEasy;
 import org.acme.vlille.dto.StationDTO;
@@ -81,8 +81,8 @@ public class VLilleService {
 		final List<StationDTO> listeStation;
 		listeStation = new ArrayList<>();
 
-		final List<InfoBorne> lstinfo = dataSet.getRecords();
-		for (final InfoBorne info : lstinfo) {
+		final List<Record> lstinfo = dataSet.getRecords();
+		for (final Record info : lstinfo) {
 			final StationDTO station = new StationDTO();
 			station.setNom(info.getFields().getNom());
 			station.setNbvelosdispo(info.getFields().getNbvelosdispo());

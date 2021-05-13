@@ -1,6 +1,6 @@
 package org.acme.vlille.domain;
 
-public class InfoBorne {
+public class Record {
 	private Station fields;
 
 	public Station getFields() {
@@ -13,6 +13,6 @@ public class InfoBorne {
 
 	@Override
 	public String toString() {
-		return "InfoBorne [fields=" + fields + "]";
+		return "Record [fields=" + fields + "]";
 	}
 }

@@ -13,8 +13,14 @@ Project current packaged weight:
 
 
 ### Prerequisite:
+
 - A docker host container ready to use.<br>
 
+- Java 8 with JAVA_HOME correctly configured and added to PATH
+
+- maven 3.6* configured with the right version of Java.
+
+- To display an *.adoc fil you will need to install a plugin in your IDE, ex: `AsciiDoctor Editor` for eclipse
 
 
 ### Run step by step: 
@@ -42,3 +48,20 @@ Project current packaged weight:
 - Package the app:
 	- Then mvn package with TestSkip (I'm not using them yet).<br/>
 	- `docker build -f src/main/docker/Dockerfile.jvm -t quarkus/getting-started-jvm .` (centos without dev tools)  <br/>
+	
+### Troubleshooting
+
+####On first install if you have
+
+```
+sudo chmod 755 mvnw #make the wrapper executable.
+./mvnw install
+
+zsh: ./mvnw: bad interpreter: /bin/sh^M: aucun fichier ou dossier de ce type
+```
+
+then 
+
+```
+dos2unix mvnw
+```
