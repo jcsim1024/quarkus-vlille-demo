@@ -1,4 +1,77 @@
-= Model
+= Quarkus vlille demo
+
+== Feature
+
+* Display VLille's Company Lille stations
+* Put VLille first call in cache 
+ 
+== Components 
+
+[plantuml, vlille-demo-components, png]
+....
+@startuml
+node "my JVM-8" {
+
+}
+
+node "my Maven 3.6" {
+
+}
+
+node "Docker" {
+	node "centos-quarkus-maven" {
+		node "JVM-8" {
+	
+		}
+		node "GraalVM" {
+		
+		}
+		node "Maven 3.6" {
+		
+		}
+	}
+}
+@enduml
+....
+
+== install
+
+* `docker pull quay.io/quarkus/centos-quarkus-maven:19.2.1`
+* `docker run --rm --name gvm-mvn-tb -v ~/Dev/XXX-v1-workspace/quarkus/quarkus-vlille-demo:/mnt/vlille-jc -p 8081:8080 -d quay.io/quarkus/centos-quarkus-maven:19.2.1 tail -f /dev/null` Start the container & forward port 8081
+
+	tail -f /dev/null is here so the container doesnt auto shutdown  
+
+* `docker exec  -ti 3fbcf0d2d455 bash` We are now inside the container -quarkus@3fbcf0d2d455 project-$
+** `cd /mnt/vlille-jc/` Shared volume 
+** `mvn -Dquarkus.http.host=0.0.0.0 compile quarkus:dev` Start the app in embeded JVM-8
+** -> http://localhost:8081/ 
+....
+Listening for transport dt_socket at address: 5005
+06:28:29 INFO  [io.qu.de.QuarkusAugmentor] (main) Beginning quarkus augmentation
+06:28:30 INFO  [io.qu.ar.pr.BeanProcessor] (build-10) Found unrecommended usage of private members (use package-private instead) in application beans:
+	- @Inject field org.acme.vlille.WebServices.VlilleWS#vLilleService
+06:28:30 INFO  [io.qu.de.QuarkusAugmentor] (main) Quarkus augmentation completed in 912ms
+06:28:30 INFO  [io.quarkus] (main) Quarkus 0.24.0 started in 1.597s. Listening on: http://0.0.0.0:8080
+06:28:30 INFO  [io.quarkus] (main) Profile dev activated. Live Coding activated.
+06:28:30 INFO  [io.quarkus] (main) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, servlet, spring-di, spring-web]
+
+^C06:34:55 INFO  [io.quarkus] (Quarkus Shutdown Thread) Quarkus stopped in 0.008s
+....
+
+* ctrl + c to cut process
+** `mvn package -Pnative` Use GraalVM to compile a linux 64 executable
+** `cd target/`
+** `./getting-started-1.0-SNAPSHOT-runner` #That sweet native execution with bash
+** -> http://localhost:8081/ 
+....
+06:38:24 INFO  [io.quarkus] (main) getting-started 1.0-SNAPSHOT (running on Quarkus 0.24.0) started in 0.018s. Listening on: http://0.0.0.0:8080
+06:38:24 INFO  [io.quarkus] (main) Profile prod activated. 
+06:38:24 INFO  [io.quarkus] (main) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, servlet, spring-di, spring-web]
+....
+
+* Notice any differences? one starts in *1.597s* and the other in *0.018s*
+
+== Model
 
 
 [plantuml, vlille-demo-model, png]

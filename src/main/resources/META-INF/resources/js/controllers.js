@@ -23,7 +23,7 @@ var app = angular.module("stationApp", []);
           });
         }
         function _success(response) {
-          _refreshPageData();
+          
         }
         function _error(response) {
           alert(response.data.message || response.statusText);
