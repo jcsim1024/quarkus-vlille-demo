@@ -23,7 +23,6 @@ public class VlilleWSE2E {
 	private WebDriver driver;
   private Map<String, Object> vars;
   JavascriptExecutor js;
-  @Before
   public void setUp() {
 		System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
 		ChromeOptions options = new ChromeOptions();
@@ -34,11 +33,9 @@ public class VlilleWSE2E {
     js = (JavascriptExecutor) driver;
     vars = new HashMap<String, Object>();
   }
-  @After
   public void tearDown() {
     driver.quit();
   }
-  @Test
     public void Login() {
         //myselenium
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(30))

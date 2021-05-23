@@ -1,3 +1,4 @@
+package org.acme.vlille.WebServices;
 
 
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class LoginTestE2E {
     
     ChromeOptions chromeOptions = new ChromeOptions();
     chromeOptions.setHeadless(true);
-    chromeOptions.addArguments("--no-sadbox");
+    chromeOptions.addArguments("--no-sa,dbox");
     driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions);
     js = (JavascriptExecutor) driver;
     vars = new HashMap<String, Object>();
@@ -59,21 +60,21 @@ public class LoginTestE2E {
       Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(10))
               .pollingEvery(Duration.ofSeconds(3)).ignoring(NoSuchElementException.class);
       int i=0;
-      System.out.println("\n E2E \n " + i++ );
-      driver.get("http://172.17.0.1:8080/");
-      System.out.println("\n E2E \n " + i++ );
+      System.out.println("\n E2E step° " + i++ );
+      driver.get("http://172.17.0.1:8081/");
+      System.out.println("\n E2E step° " + i++ );
       String str = driver.getPageSource();
       System.out.println(str);
 
       // chromedriver --whitelisted-ips
 //      driver.manage().window().setSize(new Dimension(742, 789));
       fluentFind(wait, By.id("exampleInputEmail1")).click();
-      System.out.println("\n E2E \n " + i++ );
+      System.out.println("\n E2E step° " + i++ );
       fluentFind(wait, By.id("exampleInputEmail1")).sendKeys("RUE ROYALE");
-      System.out.println("\n E2E \n " + i++ );
+      System.out.println("\n E2E step° " + i++ );
       driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
-      System.out.println(fluentFind(wait, By.cssSelector(".ng-binding:nth-child(3)")).getText());
-      System.out.println("\n E2E \n " + i++ );
+      System.out.println("Result= "+fluentFind(wait, By.cssSelector(".ng-binding:nth-child(3)")).getText());
+      System.out.println("\n E2E step° " + i++ );
 
 
 }
