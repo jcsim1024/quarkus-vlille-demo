@@ -6,9 +6,10 @@
   <artifactId>getting-started</artifactId>
   <version>1.0-SNAPSHOT</version>
   <properties>
-    <surefire-plugin.version>2.22.0</surefire-plugin.version>
+    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <quarkus.version>0.24.0</quarkus.version>
+    <quarkus.version>1.13.4.Final</quarkus.version>
+    <quarkus.platform.version>1.13.4.Final</quarkus.platform.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -41,6 +42,12 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+	    <groupId>io.quarkus</groupId>
+	    <artifactId>quarkus-junit5-mockito</artifactId>
+	    <scope>test</scope>
+	</dependency>
     
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -78,7 +85,6 @@
 		    </exclusion>
 		  </exclusions>
   	</dependency>
-    
   </dependencies>
   <build>
     <plugins>
@@ -111,48 +117,41 @@
   </build>
   <profiles>
     <profile>
-      <id>native</id>
-      <activation>
-        <property>
-          <name>native</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
-            <version>${quarkus.version}</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>native-image</goal>
-                </goals>
-                <configuration>
-                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${surefire-plugin.version}</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <systemProperties>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+        <id>native</id>
+        <activation>
+            <property>
+                <name>native</name>
+            </property>
+        </activation>
+        <properties>
+            <quarkus.package.type>native</quarkus.package.type>
+            <!-- 4G so the graal vm out of memory error in docker container -->
+            <quarkus.native.additional-build-args>-J-Xmx4G</quarkus.native.additional-build-args>
+        </properties>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${surefire-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                            <configuration>
+                                <systemPropertyVariables>
+                                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                    <maven.home>${maven.home}</maven.home>
+                                </systemPropertyVariables>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>    
   </profiles>
 </project>

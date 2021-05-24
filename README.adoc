@@ -1,16 +1,43 @@
 = Quarkus vlille demo
 
-== Feature
+== Objectives 
 
-* Display VLille's Company Lille stations
-* Put VLille first call in cache 
+* Show a poc of end 2 end test.
+* Use late cousin of Spring framework
+* Last but not least: have fun !
+
+== Feature
+==== Basically
+* Display VLille's Company *Lille* stations
+* Put VLille first call in cache to avoid reaching the API max call number  
+
+==== Technically whats inside? 
+* One containerized development environment which was really useful for my Java version upgrade. 
+I developed at first with java 8 but then I was missing some features and I was able to upgrade to a latest version quite easily.
+** In this container you can compile a native image of the project and by that I mean a linux 64 executable.
+It's worth the trouble if you need a serverless implementation or something that starts super fast, 
+ and that has a very light weight.
+* One containerized end 2 end test : SeleniumWebDriverE2ETest
+** We use *selenium web driver plugin* inside the centos maven quarkus container 
+to call the selenium standalone hub , provided that we put them on the same network.
+The selenium has chrome instance inside it and, with the test's driver directions, 
+is able to fufill its purpose which is:
+*** test Ville Api availability.
+*** test Ville Api model hasn't change.
+*** test that AngurlarJS is downloaded, and its filter function is still ok with our implementation.  
+* One end 2 end bot :  VlilleWSE2E
+** This one uses your chrome browser and will probably require some configuration.
+You will also need to start your app first. It's here to contrast against its containerized version.
+* One RestEasyClient calling VLille Api
+* Dockerfiles to build an new image from one that's adapted to run the content provided.
+They are quite self explanatory so I'll let you guys google the "how to deploy"       
  
 == Components 
 
 [plantuml, vlille-demo-components, png]
 ....
 @startuml
-node "my JVM-8" {
+node "my JVM-8 or +" {
 
 }
 
@@ -19,14 +46,25 @@ node "my Maven 3.6" {
 }
 
 node "Docker" {
-	node "centos-quarkus-maven" {
-		node "JVM-8" {
+	node "centos-quarkus-maven 21.0.0-java11" {
+		node "JVM-11" {
 	
 		}
-		node "GraalVM" {
+		node "GraalVM 21" {
 		
 		}
 		node "Maven 3.6" {
+		
+		}
+	}
+	node  "selenium/standalone-chrome 3.141.59-bismuth"  {
+		node "Chrome" {
+		
+		}
+		node "selenium node" {
+		
+		}
+		node "selenium hub" {
 		
 		}
 	}
@@ -34,28 +72,46 @@ node "Docker" {
 @enduml
 ....
 
-== install
+== Install
+==== Prerequisites
 
-* `docker pull quay.io/quarkus/centos-quarkus-maven:19.2.1`
-* `docker run --rm --name gvm-mvn-tb -v ~/Dev/XXX-v1-workspace/quarkus/quarkus-vlille-demo:/mnt/vlille-jc -p 8081:8080 -d quay.io/quarkus/centos-quarkus-maven:19.2.1 tail -f /dev/null` Start the container & forward port 8081
+* Recent version of Docker and by the way this assumes you are familiar with it.
+* Java 8 or plus and JAVA_HOME correctly configured
+* All of the following instructions were made on a Ubuntu 20 but since we use docker it should be ok.
+* For native compilation you will need 5G ram for your centos-maven-quarkus.
+see `quarkus.native.additional-build-args` to restrain its greediness (-> more garbageC cycle though)
+ 
+==== Setup
 
-	tail -f /dev/null is here so the container doesnt auto shutdown  
+* `docker network create grid`
+* `docker run --rm -d -p 4444:4444 -p 6900:5900 -p 9515:9515  --net grid --add-host host.docker.internal:host-gateway   --name selenium -v /dev/shm:/dev/shm selenium/standalone-chrome:3.141.59-bismuth`
 
-* `docker exec  -ti 3fbcf0d2d455 bash` We are now inside the container -quarkus@3fbcf0d2d455 project-$
+	For later, if this container cant reach the gvm-mnv-tv due to a "...Cannot Bind etc..." then "docker exec -ti selenium bash" + "chromedriver --whitelisted-ips" this will allow ipv6 for the chrome proxy
+
+* `docker run --rm --name gvm-mvn-tb --net grid  -v ~/Dev/XXX-v1-workspace/quarkus/quarkus-vlille-demo:/mnt/vlille-jc -p 8081:8080 -p 8084:8083  -d quay.io/quarkus/centos-quarkus-maven:21.0.0-java11 tail -f /dev/null`
+
+	Start the container & forward port 8081 And 8083 if you want to curl test server
+	tail -f /dev/null is here so the container doesnt auto shutdown
+	We download a lot of stuff its ok to leve "--rm" option out if you want to.
+	Inside:centos-quarkus-maven:21.0.0-java11 GraalVM21 and JDK11 toolbox
+
+* `docker exec  -ti gvm-mvn-tb bash` We are now inside the container -quarkus@3fbcf0d2d455 project-$
 ** `cd /mnt/vlille-jc/` Shared volume 
-** `mvn -Dquarkus.http.host=0.0.0.0 compile quarkus:dev` Start the app in embeded JVM-8
+** `mvn -Dquarkus.http.host=0.0.0.0 compile quarkus:dev` Start the app in embeded JVM-11
 ** -> http://localhost:8081/ 
 ....
-Listening for transport dt_socket at address: 5005
-06:28:29 INFO  [io.qu.de.QuarkusAugmentor] (main) Beginning quarkus augmentation
-06:28:30 INFO  [io.qu.ar.pr.BeanProcessor] (build-10) Found unrecommended usage of private members (use package-private instead) in application beans:
-	- @Inject field org.acme.vlille.WebServices.VlilleWS#vLilleService
-06:28:30 INFO  [io.qu.de.QuarkusAugmentor] (main) Quarkus augmentation completed in 912ms
-06:28:30 INFO  [io.quarkus] (main) Quarkus 0.24.0 started in 1.597s. Listening on: http://0.0.0.0:8080
-06:28:30 INFO  [io.quarkus] (main) Profile dev activated. Live Coding activated.
-06:28:30 INFO  [io.quarkus] (main) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, servlet, spring-di, spring-web]
 
-^C06:34:55 INFO  [io.quarkus] (Quarkus Shutdown Thread) Quarkus stopped in 0.008s
+Listening for transport dt_socket at address: 5005
+22:36:18 INFO  [io.qu.ar.pr.BeanProcessor] (build-29) Found unrecommended usage of private members (use package-private instead) in application beans:
+	- @Inject field org.acme.vlille.WebServices.VlilleWS#vLilleService
+__  ____  __  _____   ___  __ ____  ______ 
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
+22:36:19 INFO  [io.quarkus] (Quarkus Main Thread) getting-started 1.0-SNAPSHOT on JVM (powered by Quarkus 1.13.4.Final) started in 2.119s. Listening on: http://0.0.0.0:8080
+22:36:19 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+22:36:19 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, spring-di, spring-web]
+^C22:36:40 INFO  [io.quarkus] (Shutdown thread) getting-started stopped in 0.023s
 ....
 
 * ctrl + c to cut process
@@ -64,12 +120,14 @@ Listening for transport dt_socket at address: 5005
 ** `./getting-started-1.0-SNAPSHOT-runner` #That sweet native execution with bash
 ** -> http://localhost:8081/ 
 ....
-06:38:24 INFO  [io.quarkus] (main) getting-started 1.0-SNAPSHOT (running on Quarkus 0.24.0) started in 0.018s. Listening on: http://0.0.0.0:8080
-06:38:24 INFO  [io.quarkus] (main) Profile prod activated. 
-06:38:24 INFO  [io.quarkus] (main) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, servlet, spring-di, spring-web]
+
+22:31:54 INFO  [io.quarkus] (main) getting-started 1.0-SNAPSHOT native (powered by Quarkus 1.13.4.Final) started in 0.012s. Listening on: http://0.0.0.0:8080
+22:31:54 INFO  [io.quarkus] (main) Profile prod activated. 
+22:31:54 INFO  [io.quarkus] (main) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, spring-di, spring-web]
+^C22:33:25 INFO  [io.quarkus] (Shutdown thread) getting-started stopped in 0.004s
 ....
 
-* Notice any differences? one starts in *1.597s* and the other in *0.018s*
+* Notice any differences? one starts in *2.119s* and the other in *0.012s*
 
 == Model
 
@@ -112,7 +170,7 @@ Station ||--|| Record
 @enduml
 ....
 
-== Flow
+== Flow diagram
 
 [plantuml, vlille-demo-flow, png]
 ....
