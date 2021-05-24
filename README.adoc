@@ -2,37 +2,42 @@
 
 == Objectives 
 
-* Show a poc of end 2 end test.
-* Use late cousin of Spring framework
-* Last but not least: have fun !
+* Show a poc of portable end 2 end test.
+* Use a late cousin of Spring framework.
+* Discover native compilation.
+* Last but not least: have fun doing it!
 
-== Feature
+== Features
 ==== Basically
 * Display VLille's Company *Lille* stations
 * Put VLille first call in cache to avoid reaching the API max call number  
 
 ==== Technically whats inside? 
-* One containerized development environment which was really useful for my Java version upgrade. 
-I developed at first with java 8 but then I was missing some features and I was able to upgrade to a latest version quite easily.
+* One containerized development environment which was really useful for my Quarkus version upgrade. 
+I developed at first with the v0.24 but then I was missing main features and I was able to upgrade to the latest version quite easily.
 ** In this container you can compile a native image of the project and by that I mean a linux 64 executable.
 It's worth the trouble if you need a serverless implementation or something that starts super fast, 
  and that has a very light weight.
 * One containerized end 2 end test : SeleniumWebDriverE2ETest
 ** We use *selenium web driver plugin* inside the centos maven quarkus container 
-to call the selenium standalone hub , provided that we put them on the same network.
-The selenium has chrome instance inside it and, with the test's driver directions, 
-is able to fufill its purpose which is:
-*** test Ville Api availability.
-*** test Ville Api model hasn't change.
-*** test that AngurlarJS is downloaded, and its filter function is still ok with our implementation.  
+to call the selenium standalone hub , provided that we put them on the same network, to do a headless check.
+The selenium has a chrome instance inside it, and, with the test's driver directions, 
+is able to fufill its purpose which is (mvn test):
+*** test VLille Api availability.
+*** test VLille Api model hasn't change.
+*** test that AngurlarJS is downloaded, and that its filter function is still ok with our implementation.
+** If you need it, you can run the test outside the centos container, directly in your IDE. 
+To do that, you need to change the hostS address and ports accordingly. 
+Both instance have curl inside them use it to test network connection first.
 * One end 2 end bot :  VlilleWSE2E
 ** This one uses your chrome browser and will probably require some configuration.
-You will also need to start your app first. It's here to contrast against its containerized version.
+You will also need to start your app first. It's here to contrast against its containerized version
+and also for debugging.
 * One RestEasyClient calling VLille Api
 * Dockerfiles to build an new image from one that's adapted to run the content provided.
 They are quite self explanatory so I'll let you guys google the "how to deploy"       
  
-== Components 
+== Components and test interaction
 
 [plantuml, vlille-demo-components, png]
 ....
@@ -46,29 +51,38 @@ node "my Maven 3.6" {
 }
 
 node "Docker" {
-	node "centos-quarkus-maven 21.0.0-java11" {
-		node "JVM-11" {
+	node "centos-quarkus-maven 21.0.0-java11" as c {
+		node "JVM-11" as jvm {
 	
 		}
 		node "GraalVM 21" {
 		
 		}
-		node "Maven 3.6" {
+		node "Maven 3.6" as mvn {
 		
 		}
 	}
-	node  "selenium/standalone-chrome 3.141.59-bismuth"  {
-		node "Chrome" {
+	node  "selenium/standalone-chrome 3.141.59-bismuth" as gvm {
+		node "Chrome" as ch {
 		
 		}
-		node "selenium node" {
+		node "selenium node" as sel {
 		
 		}
-		node "selenium hub" {
+		node "selenium hub" as selhub {
 		
 		}
 	}
 }
+
+mvn -> jvm : 1.mvn test
+jvm -> selhub : 2.new RemoteWebDriver
+selhub -> sel : 3 
+sel -> ch : 4.driver.get(http://gvm-mvn-tb:8083)
+ch -left-> jvm  : 5.GET http://gvm-mvn-tb:8083
+
+
+
 @enduml
 ....
 
@@ -170,7 +184,7 @@ Station ||--|| Record
 @enduml
 ....
 
-== Flow diagram
+== Feature flow diagram
 
 [plantuml, vlille-demo-flow, png]
 ....
@@ -230,5 +244,49 @@ end note
 @enduml
 ....
 
+== Conclusion
+
+* Containerized building image for the win.
+** Having a building environment contained in a pod was a great time savior 
+for my Quarkus version upgrade.   
+At the begining I developed with my old v0.24, I added new features, which required to upgrade to v1.13, 
+but then the *native compilation* stopped working. One Quarkus 1.13 feature didn't compile on 
+the previous GraalVM19... Because, in fact, the *java* serveur can run on JDK 8 and is compatible with JDK11. 
+** Without the container: I would have had to upgrade 
+my JDK (GraalVM 21 needs JDK11), which is quite easy but still have to do it, and maybe later have to 
+roll back to the previous version for my previous project. +
+For GraalVM its
+another story. From my experience, GraalVM was hard to set up on my laptop 
+thus I guess upgrading could have been the same matter... And do all of this without 
+guaranteeing the new stack will compile, plus a risk a of not being able to 
+roll back to the previous working stack! + 
+For this project, upgrading to a newer version could have been a 
+little maneuver that was gonna cost us 51 years!!! (Cooper. Interstellar)
+
+** Whereas, with Docker: update the pom, search and pull the new building image, and there 
+you have it!  5 minutes. 
+
+** Another advantage is that the images are frozen in time: I was able to compile natively
+this old project on first try when I hadn't done it for one year.
+ 
+* Containerized end to end tests
+** In contrast to using your own chrome instance, having a fixed version of chrome 
+and selenium makes the test more stable.
+** Tests are now parallelizable.   
+** Tests can be run from Jenkins or Gitlab 
+
+* Native compilation
+** The numbers speaks for themselves. The native server starts 100 times faster then 
+the jvm hosted one.
+** This makes serverless implementation possible for Java possible and its rich 
+ecosystem. I guess that's why its called "Graal" VM.  
+
+== Improvements comming 
+
+* TODO:
+** a mock for Vlille Api to avoid having a none deterministic variable in the test (direct call to Vlille Api)
+** a docker compose file.
+** a selenium video recorder.
+** a Gitlab CI/CD.
 
 
