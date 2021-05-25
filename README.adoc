@@ -2,10 +2,13 @@
 
 == Objectives 
 
-* Show a poc of portable end 2 end test.
+* Show a *poc* of portable end to end test.
 * Use a late cousin of Spring framework.
 * Discover native compilation.
 * Last but not least: have fun doing it!
+
+Before moving further, to display an **.adoc* file you will need to install a plugin in your IDE, ex: AsciiDoctor Editor for eclipse  +
+Or xref:https://github.com/jcsim1024/quarkus-vlille-demo/blob/master/README.pdf[README.pdf] +
 
 == Features
 ==== Basically
