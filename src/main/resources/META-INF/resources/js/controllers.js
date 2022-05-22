@@ -3,10 +3,7 @@ var app = angular.module("stationApp", []);
       app.controller("StationListCtrl", function ($scope, $http) {
         //Initialize page with default data which is blank in this example
         $scope.stations = [];
-        $scope.form = {
-          nom: "",
-          description: ""
-        };
+        
         //Now load the data from server
         _refreshPageData();
        

@@ -8,14 +8,10 @@ public class StationDTO implements Serializable {
 		super();
 	}
 
-	/**
-	 * IDx.
-	 */
-	private String nom;
 
-	/**
-	 * Number of bikes.
-	 */
+
+	private int index;
+	private String nom;
 	private String nbvelosdispo;
 
 	public String getNom() {
@@ -32,6 +28,14 @@ public class StationDTO implements Serializable {
 
 	public void setNbvelosdispo(final String nbvelosdispo) {
 		this.nbvelosdispo = nbvelosdispo;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	@Override

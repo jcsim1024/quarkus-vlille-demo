@@ -1,13 +1,14 @@
 package org.acme.vlille.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
 import org.acme.vlille.domain.Record;
-import org.acme.vlille.domain.VlilleDataSet;
 import org.acme.vlille.domain.VlilleServiceRestEasy;
 import org.acme.vlille.dto.StationDTO;
 import org.acme.vlille.dto.StationResponseDTO;
@@ -25,9 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VLilleService {
 
-	private static final HashMap<String, StationDTO> stations = new HashMap<>();
-
-	Logger logger = LoggerFactory.getLogger(VLilleService.class);
+	private static final TreeMap<String, StationDTO> cachedStations = new TreeMap<>();
 
 	@Inject
 	@RestClient
@@ -42,21 +41,19 @@ public class VLilleService {
 	 */
 	public StationResponseDTO findAll() throws SynchronisationException {
 		final StationResponseDTO stationResponseDTO = new StationResponseDTO();
-		// Check if we have stations in the map...
-		// Here we will later externalize the cache from the app in order to make the
-		// hash map loading faster
 
-		if (stations.size() == 0) {
+		if (cachedStations.size() == 0) {
 			final List<StationDTO> loadedStations = this.performSynchronisation();
-			// We add a station in map for each entry
-			for (final StationDTO station : loadedStations) {
-				stations.put(station.getNom(), station);
-			}
+			AtomicInteger index = new AtomicInteger();
+			loadedStations.stream().sorted(Comparator.comparing(StationDTO::getNom ))
+					.forEach(stationDTO -> {
+						stationDTO.setIndex(index.incrementAndGet());
+						cachedStations.put(stationDTO.getNom(), stationDTO);
+					});
 
-			stationResponseDTO.setStations(loadedStations);
-		} else {
-			stationResponseDTO.setStations(new ArrayList<>(stations.values()));
 		}
+		stationResponseDTO.setStations(new ArrayList<>(cachedStations.values()));
+
 
 		return stationResponseDTO;
 	}
@@ -68,27 +65,22 @@ public class VLilleService {
 	 * @throws SynchronisationException if we can't synchronise the station list
 	 *                                  with remote API.
 	 */
-	public List<StationDTO> performSynchronisation() throws SynchronisationException {
-
-		final VlilleDataSet dataSet = vService.getDataSet();
-
-		List<StationDTO> listeStation;
-		listeStation = metierVersContrat(dataSet);
-		return listeStation;
+	private List<StationDTO> performSynchronisation() throws SynchronisationException {
+		return vService
+				.getDataSet()
+				.getRecords()
+				.stream()
+				.map(VLilleService::toSationDTO)
+				.toList();
 	}
 
-	private List<StationDTO> metierVersContrat(final VlilleDataSet dataSet) {
-		final List<StationDTO> listeStation;
-		listeStation = new ArrayList<>();
 
-		final List<Record> lstinfo = dataSet.getRecords();
-		for (final Record info : lstinfo) {
-			final StationDTO station = new StationDTO();
-			station.setNom(info.getFields().getNom());
-			station.setNbvelosdispo(info.getFields().getNbvelosdispo());
-			listeStation.add(station);
-		}
-		return listeStation;
+
+	private static StationDTO toSationDTO(Record info) {
+		final StationDTO station = new StationDTO();
+		station.setNom(info.getFields().getNom());
+		station.setNbvelosdispo(info.getFields().getNbvelosdispo());
+		return station;
 	}
 
 }

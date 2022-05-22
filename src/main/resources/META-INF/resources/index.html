@@ -140,8 +140,7 @@
 <div ng-app="stationApp" ng-controller="StationListCtrl" class=".form-group" style="margin: 15px">
         <div class="row">
 	        <label class="col-6 col-xs-12">Chercher: 
-	        	<input ng-model="searchText" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="RUE ROYAL , FLANDRE...">
-	       		<small id="emailHelp" class="form-text text-muted">Search with a name, a city or anything else</small>
+	        	<input ng-model="searchText" type="text" class="form-control" id="input-vlille-station-search-bar" placeholder="RUE ROYAL , FLANDRE...">
 	       	</label>
        	</div>
 		<table class="table-bordered ">
@@ -150,17 +149,13 @@
                     <th scope="col">#</th>
                     <th scope="col">V'Lille name</th>
                     <th scope="col">Number of bikes</th>
-                    <th scope="col"><!-- Bikes --></th>
-                    <th scope="col"><!-- Free --></th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="station in stations  | filter:searchText ">
-                    <td scope="row"><!-- {{station.name}} --></td>
+                    <td>{{station.index}}</td>
                     <td>{{station.nom}}</td>
                     <td>{{station.nbvelosdispo}}</td>
-                    <td><!-- {{station.bikes}} --></td>
-                    <td><!-- {{station.free}} --></td> 
                 </tr>
             </tbody>
         </table>

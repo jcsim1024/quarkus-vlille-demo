@@ -25,7 +25,6 @@ import org.openqa.selenium.support.ui.Wait;
  */
 public class VlilleWSE2E {
 	private WebDriver driver;
-	private Map<String, Object> vars;
 	JavascriptExecutor js;
 
 	public void setUp() {
@@ -36,7 +35,6 @@ public class VlilleWSE2E {
 		driver.manage().window().setSize(new Dimension(1920, 1080));
 
 		js = (JavascriptExecutor) driver;
-		vars = new HashMap<String, Object>();
 	}
 
 	public void tearDown() {

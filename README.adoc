@@ -1,6 +1,24 @@
 = (W I P) Quarkus vlille demo
 
-adding new features...
+WIP adding new features:
+* 0. clean test
+* 1. create a job schedule job to get data from vlille api and store it a mongo data base
+* 2. create hibernate orm to retrive it from mongo  
+* 3. expose data to the end point
+* 4. cache data
+* 5. Next step ? :
+** create a test data base?
+** Kafka cluster?
+** Slice project in 2 different microservice ?
+** add elastic search?
+** create a docker compose up?
+** create github Ci ?
+** cucumber test ?
+** find a vertx use case ?
+** add Auth library ?
+** add video debugging in selenium test?
+
+
 
 == Objectives 
 
