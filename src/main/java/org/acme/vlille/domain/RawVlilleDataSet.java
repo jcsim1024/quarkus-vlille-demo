@@ -2,13 +2,14 @@ package org.acme.vlille.domain;
 
 import lombok.Data;
 
+import javax.json.JsonArray;
 import java.util.List;
 
 @Data
-public class VlilleDataSet {
+public class RawVlilleDataSet {
 
 	private Integer nhits;
 
-	private List<Record> records;
+	private JsonArray records;
 
 }

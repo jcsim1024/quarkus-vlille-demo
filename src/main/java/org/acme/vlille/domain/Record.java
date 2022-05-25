@@ -1,15 +1,11 @@
 package org.acme.vlille.domain;
 
+import lombok.Data;
+
+@Data
 public class Record {
 	private Station fields;
 
-	public Station getFields() {
-		return fields;
-	}
-
-	public void setFields(final Station fields) {
-		this.fields = fields;
-	}
 
 	@Override
 	public String toString() {
