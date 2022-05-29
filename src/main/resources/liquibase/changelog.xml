@@ -1,0 +1,19 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="jc-unsupervised-team-1">
+
+
+        <ext:insertOne collectionName="vlillecol">
+            <ext:document>
+                {"records":{"datasetid":"vlille-realtime","recordid":"6f55bf2493bbf51f0490ee50987490d05135c4e6","fields":{"nbvelosdispo":2,"nbplacesdispo":16,"libelle":66,"adresse":"35 RUE EDOUARD DELESALLE","nom":"DELESALLE MEDIATHEQUE","etat":"EN SERVICE","commune":"LILLE","etatconnexion":"CONNECTED","type":"AVEC TPE","geo":[50.63237,3.066273],"localisation":[50.63237,3.066273],"datemiseajour":"2022-05-25T23:48:33+00:00"},"geometry":{"type":"Point","coordinates":[3.066273,50.63237]},"record_timestamp":"2022-05-25T23:56:03.158Z"},"retrivalTime":{"dayOfMonth":25,"dayOfWeek":"WEDNESDAY","dayOfYear":145,"hour":23,"minute":59,"month":"MAY","monthValue":5,"nano":617273966,"offset":{"rules":{"fixedOffset":true,"transitionRules":[],"transitions":[]},"totalSeconds":0},"second":3,"year":2022}}
+            </ext:document>
+        </ext:insertOne>
+
+    </changeSet>
+
+</databaseChangeLog>

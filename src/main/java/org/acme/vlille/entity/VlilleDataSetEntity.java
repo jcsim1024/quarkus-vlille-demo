@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 /**
  * Active record pattern
  */
-@MongoEntity(collection="VlilleDataSet")
+@MongoEntity(collection="vlillecol")
 @ApplicationScoped
 @Data
 public class VlilleDataSetEntity extends PanacheMongoEntity {
