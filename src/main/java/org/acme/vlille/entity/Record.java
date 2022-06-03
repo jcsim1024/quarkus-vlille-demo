@@ -1,5 +1,6 @@
-package org.acme.vlille.domain;
+package org.acme.vlille.entity;
 
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Data;
 
 @Data

@@ -1,36 +1,50 @@
 package org.acme.vlille.services;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeMap;
+import io.quarkus.logging.Log;
+import io.quarkus.mongodb.reactive.ReactiveMongoClient;
+import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
+import org.acme.vlille.dto.StationDTO;
+import org.acme.vlille.entity.RawVlilleDataSet;
+import org.acme.vlille.entity.Record;
+import org.acme.vlille.exception.SynchronisationException;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-
-import org.acme.vlille.domain.Record;
-import org.acme.vlille.domain.VlilleServiceRestEasy;
-import org.acme.vlille.dto.StationDTO;
 import org.acme.vlille.dto.StationResponseDTO;
-import org.acme.vlille.exception.SynchronisationException;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+//import org.bson.codecs.pojo.
+
 
 /**
  * @author Jean-Charles
  *
  *
  */
-@Service
+@ApplicationScoped
 public class VLilleService {
 
-	private static final TreeMap<String, StationDTO> cachedStations = new TreeMap<>();
+	private static final List<StationDTO> cachedStations = new ArrayList<>();
 
 	@Inject
-	@RestClient
-	VlilleServiceRestEasy vService;
+	ReactiveMongoClient client;
+
+
+
+	ReactiveMongoCollection<RawVlilleDataSet> collection;
+
+	static OffsetDateTime lastimeCached;
+	private static final int CACHE_EVICTION= 10;;
+
+
+
+
+
 
 	/**
 	 * Find all stations status.
@@ -40,22 +54,38 @@ public class VLilleService {
 	 *                                  with remote API.
 	 */
 	public StationResponseDTO findAll() throws SynchronisationException {
-		final StationResponseDTO stationResponseDTO = new StationResponseDTO();
 
-		if (cachedStations.size() == 0) {
-			final List<StationDTO> loadedStations = this.performSynchronisation();
-			AtomicInteger index = new AtomicInteger();
-			loadedStations.stream().sorted(Comparator.comparing(StationDTO::getNom ))
-					.forEach(stationDTO -> {
-						stationDTO.setIndex(index.incrementAndGet());
-						cachedStations.put(stationDTO.getNom(), stationDTO);
-					});
+		if (isUpdateCache()) {
+			cachedStations.clear();
+			Log.info("Main clear cache");
+			final Uni<List<StationDTO>> loadedStations = this.performSynchronisation();
+
+			var stations = loadedStations.onItem().transform(stationDTOS -> {
+						AtomicInteger index = new AtomicInteger();
+						stationDTOS.stream()
+								.sorted(Comparator.comparing(StationDTO::getNom))
+								.forEach(stationDTO -> stationDTO.setIndex(index.incrementAndGet()));
+						return stationDTOS;
+					})
+					.onItem().invoke((stationDTOS) -> {cachedStations.addAll(stationDTOS);
+						try {
+
+							Thread.sleep(2000L);
+							Log.info("print thread sleep");
+						} catch (InterruptedException e) {
+							throw new RuntimeException(e);
+						}
+					}).runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+					.await()
+					.indefinitely();
+			Log.info("Main thread");
+			return new StationResponseDTO(stations, null);
+
 
 		}
-		stationResponseDTO.setStations(new ArrayList<>(cachedStations.values()));
+		return new StationResponseDTO(cachedStations, null);
 
 
-		return stationResponseDTO;
 	}
 
 	/**
@@ -65,17 +95,61 @@ public class VLilleService {
 	 * @throws SynchronisationException if we can't synchronise the station list
 	 *                                  with remote API.
 	 */
-	private List<StationDTO> performSynchronisation() throws SynchronisationException {
-		return vService
-				.getDataSet()
-				.getRecords()
-				.stream()
-				.map(VLilleService::toSationDTO)
-				.toList();
+	private Uni<List<StationDTO>> performSynchronisation() throws SynchronisationException {
+		Multi<RawVlilleDataSet> ar = client.getDatabase("vlilledb").getCollection("vlillecol").withDocumentClass(RawVlilleDataSet.class).find();
+		 return ar.onItem().transform(RawVlilleDataSet::getRecords)
+				 .onItem().transform(VLilleService::toSationDTO).collect().asList();
+
+//		var a = ar.onItem().invoke((found) -> Log.info(found)).collect().asList().await().indefinitely().;
+//		ar.onCompletion();
+//		  collection.aggregate(Arrays.asList(
+//								new JsonObject("""
+//										{$sort:
+//										  {'records.fields.nom':-1}
+//									 	}"""),
+//								new JsonObject("""
+//										{$group:
+//											{_id:'$records.fields.nom',
+//
+//										    first:{$max:'$records.record_timestamp'}
+//										    }
+//
+//										}
+//										"""))).collect().asList();
+
+		/*MongoCollection<Document> collection = mongoClient.getDatabase("vlilledb")
+				.getCollection("vlillecol").withDocumentClass(Document.class);
+*/
+
+//		collection.
+//				.aggregate(
+//						Arrays.asList(
+//								new JsonObject("""
+//										{$sort:
+//										  {'records.fields.nom':-1}
+//									 	}"""),
+//								new JsonObject("""
+//										{$group:
+//											{_id:'$records.fields.nom',
+//
+//										    first:{$max:'$records.record_timestamp'}
+//										    }
+//
+//										}
+//										""")
+//						)
+//				).;
+
+//		return null;
+//				vLilleDataSetRepo
+//				.getRecords()
+//				.stream()
+//				.map(VLilleService::toSationDTO)
+//				.toList();
 	}
 
 
-
+	// TODO replace with mapstruct
 	private static StationDTO toSationDTO(Record info) {
 		final StationDTO station = new StationDTO();
 		station.setNom(info.getFields().getNom());
@@ -83,4 +157,9 @@ public class VLilleService {
 		return station;
 	}
 
+	private boolean isUpdateCache() {
+		return cachedStations.size() == 0
+				|| OffsetDateTime.now().minusMinutes(CACHE_EVICTION).isAfter(lastimeCached);
+
+	}
 }

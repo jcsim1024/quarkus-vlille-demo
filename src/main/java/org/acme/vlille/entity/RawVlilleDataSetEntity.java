@@ -14,8 +14,8 @@ import java.time.OffsetDateTime;
 @MongoEntity(collection="vlillecol")
 @ApplicationScoped
 @Data
-public class VlilleDataSetEntity extends PanacheMongoEntity {
-	public VlilleDataSetEntity() {
+public class RawVlilleDataSetEntity extends PanacheMongoEntity {
+	public RawVlilleDataSetEntity() {
 
 	}
 

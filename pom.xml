@@ -99,6 +99,11 @@
     </dependency>
 
 
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-mongodb-client</artifactId>
+    </dependency>
+
     <!-- Scheduler-->
 
     <dependency>
@@ -117,6 +122,11 @@
       <artifactId>lombok</artifactId>
       <version>1.18.24</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
+      <version>4.3.4</version>
     </dependency>
 
   </dependencies>
@@ -178,7 +188,7 @@
                   <systemPropertyVariables>
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                     <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                    <maven.home>${maven.home}</maven.home>
+                    <maven.home>${maven_home}</maven.home>
                   </systemPropertyVariables>
                 </configuration>
               </execution>

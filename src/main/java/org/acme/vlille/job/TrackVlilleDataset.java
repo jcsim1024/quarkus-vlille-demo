@@ -3,7 +3,7 @@ package org.acme.vlille.job;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import org.acme.vlille.domain.RawVlilleServiceRestEasy;
-import org.acme.vlille.entity.VlilleDataSetEntity;
+import org.acme.vlille.entity.RawVlilleDataSetEntity;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -32,8 +32,8 @@ public class TrackVlilleDataset {
         });
     }
 
-    private VlilleDataSetEntity buildVlilleDataSetEntity(OffsetDateTime now, String record) {
-        var entityBSON = new VlilleDataSetEntity();
+    private RawVlilleDataSetEntity buildVlilleDataSetEntity(OffsetDateTime now, String record) {
+        var entityBSON = new RawVlilleDataSetEntity();
         // not to be confused with jackson library
         entityBSON.setRecords(new org.bson.json.JsonObject(record));
         entityBSON.setRetrivalTime(now);
