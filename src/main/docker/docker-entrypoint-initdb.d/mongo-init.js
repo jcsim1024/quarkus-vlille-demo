@@ -26,6 +26,7 @@ db.vlillecol.insertMany([
 // db.auth('root', 'example')
 
 //ease IDE query console
+db = db.getSiblingDB('admin')
 
 db.grantRolesToUser("root", [{role:"dbOwner",db:"vlilledb"}])
 
