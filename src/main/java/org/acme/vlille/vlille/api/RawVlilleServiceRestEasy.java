@@ -1,4 +1,4 @@
-package org.acme.vlille.domain;
+package org.acme.vlille.vlille.api;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -11,11 +11,11 @@ import javax.ws.rs.Produces;
 @Path("/")
 @ApplicationScoped
 @RegisterRestClient
-@JsonDeserialize(as = RawVlilleDataSet.class)
+@JsonDeserialize(as = RawVlilleDataSetDTO.class)
 public interface RawVlilleServiceRestEasy {
 
 	@GET
 	@Produces("application/json")
-	RawVlilleDataSet getDataSet();
+	RawVlilleDataSetDTO getDataSet();
 
 }

@@ -1,12 +1,11 @@
-package org.acme.vlille.domain;
+package org.acme.vlille.vlille.api;
 
 import lombok.Data;
 
 import javax.json.JsonArray;
-import java.util.List;
 
 @Data
-public class RawVlilleDataSet {
+public class RawVlilleDataSetDTO {
 
 	private Integer nhits;
 

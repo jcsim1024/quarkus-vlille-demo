@@ -1,4 +1,4 @@
-package org.acme.vlille.entity;
+package org.acme.vlille.vlille.entity;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;

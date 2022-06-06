@@ -6,7 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.acme.vlille.dto.StationDTO;
 import org.acme.vlille.dto.StationResponseDTO;
-import org.acme.vlille.entity.RawVlilleDataSet;
+import org.acme.vlille.entity.VlilleDataSet;
 import org.acme.vlille.entity.Record;
 import org.acme.vlille.entity.Station;
 
@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.acme.vlille.entity.RawVlilleDataSet.aggregateByStationNameOrderByTime;
+import static org.acme.vlille.entity.VlilleDataSet.aggregateByStationNameOrderByTime;
 
 
 /**
@@ -31,13 +31,15 @@ public class VLilleService {
     private static final List<StationDTO> cachedStations = new ArrayList<>();
     private static OffsetDateTime lastimeCached = OffsetDateTime.now();
 
-    public StationResponseDTO findAll() {
+    public StationResponseDTO.StationResponseDTOBuilder findAll() {
 
+        var respBuilder = StationResponseDTO.builder();
         switch (Pattern.match(cachedStations,lastimeCached)){
-            case CACHED : return new StationResponseDTO(cachedStations, null);
+
+            case CACHED : return respBuilder.stations(cachedStations);
             case OUTDATED_CACHE: cachedStations.clear();
             case NO_CACHE:
-            default: return new StationResponseDTO( retrieveAndCacheStation(),null);
+            default: return respBuilder.stations(retrieveAndCacheStation());
         }
     }
 
@@ -53,7 +55,7 @@ public class VLilleService {
             return stationDTOS;
         });
 
-        stationsUni.emitOn(Infrastructure.getDefaultExecutor())
+        stationsUni.emitOn(Infrastructure.getDefaultWorkerPool())
                 .invoke((stationDTOS) -> {
                     ioSimulation(stationDTOS);
                     log.info("---- #3 ----");
@@ -78,7 +80,7 @@ public class VLilleService {
 
     private Uni<List<StationDTO>> getStationMapByName() {
         return aggregateByStationNameOrderByTime()
-                .onItem().transform(RawVlilleDataSet::getRecords)
+                .onItem().transform(VlilleDataSet::getRecords)
                 .onItem().transform(Record::getFields)
                 .onItem().transform(VLilleService::toSationDTO)
                 .collect().asList();

@@ -1,9 +1,11 @@
 package org.acme.vlille.dto;
 
+import lombok.Builder;
+
 import java.util.List;
 
 
-
+@Builder
 public class StationResponseDTO {
 
 	/**

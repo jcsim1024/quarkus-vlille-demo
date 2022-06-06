@@ -2,9 +2,8 @@ package org.acme.vlille.job;
 
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
-import org.acme.vlille.domain.RawVlilleServiceRestEasy;
-import org.acme.vlille.entity.RawVlilleDataSetEntity;
-import org.acme.vlille.services.VLilleService;
+import org.acme.vlille.vlille.api.RawVlilleServiceRestEasy;
+import org.acme.vlille.vlille.entity.RawVlilleDataSetEntity;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,7 +12,7 @@ import java.time.OffsetDateTime;
 
 
 @ApplicationScoped
-public class TrackVlilleDataset {
+public class TrackRawVlilleDataset {
 
     @Inject
     @RestClient

@@ -141,7 +141,7 @@ see `quarkus.native.additional-build-args` to restrain its greediness (-> more g
 
 Listening for transport dt_socket at address: 5005
 22:36:18 INFO  [io.qu.ar.pr.BeanProcessor] (build-29) Found unrecommended usage of private members (use package-private instead) in application beans:
-	- @Inject field org.acme.vlille.WebServices.VlilleWS#vLilleService
+	- @Inject field org.acme.vlille.resource.VlilleWS#vLilleService
 __  ____  __  _____   ___  __ ____  ______ 
  --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
  -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
