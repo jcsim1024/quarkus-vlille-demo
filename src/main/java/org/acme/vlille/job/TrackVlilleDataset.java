@@ -4,6 +4,7 @@ import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import org.acme.vlille.domain.RawVlilleServiceRestEasy;
 import org.acme.vlille.entity.RawVlilleDataSetEntity;
+import org.acme.vlille.services.VLilleService;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,8 +19,7 @@ public class TrackVlilleDataset {
     @RestClient
     RawVlilleServiceRestEasy rawVlilleServiceRestEasy;
 
-
-    @Scheduled(every = "10m")
+    @Scheduled(every = "10m" , delay = 30L)
     void pullDataset() {
         var dataset = rawVlilleServiceRestEasy.getDataSet();
         OffsetDateTime now = OffsetDateTime.now();
@@ -28,7 +28,7 @@ public class TrackVlilleDataset {
 
         dataset.getRecords().forEach(recordJsonValue -> {
              buildVlilleDataSetEntity(now, recordJsonValue.toString())
-                     .persist();
+                     .persist().subscribe();
         });
     }
 

@@ -17,17 +17,11 @@ import org.slf4j.LoggerFactory;
 public class VlilleWS {
 	Logger logger = LoggerFactory.getLogger(VlilleWS.class);
 
-	/**
-	 * VLille Service.
-	 */
+
 	@Inject
 	private VLilleService vLilleService;
 
-	/**
-	 * Return a list of stations.
-	 * 
-	 * @return a list of stations.
-	 */
+
 	@Path("/findAll")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
