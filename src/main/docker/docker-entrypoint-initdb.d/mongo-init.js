@@ -9,7 +9,7 @@ db.createUser({
     pwd: 'vlille-psswd',
     roles: [
         {
-            role: 'readWrite',
+            role: 'dbOwner',
             db: 'vlilledb',
         },
     ],

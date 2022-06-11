@@ -153,7 +153,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="station in stations  | filter:searchText ">
-                    <td>{{station.index}}</td>
+                    <td id="vlille-station-id-{{station.index}}" >{{station.index}}</td>
                     <td>{{station.nom}}</td>
                     <td>{{station.nbvelosdispo}}</td>
                 </tr>

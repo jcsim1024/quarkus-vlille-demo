@@ -1,22 +1,20 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.acme</groupId>
   <artifactId>getting-started</artifactId>
   <version>1.0-SNAPSHOT</version>
-
   <properties>
-    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <maven.compiler.target>17</maven.compiler.target>
-    <quarkus.version>2.7.1.Final</quarkus.version>
-    <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
     <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
+    <quarkus.version>2.7.1.Final</quarkus.version>
+    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -44,6 +42,11 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-container-image-docker</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
@@ -63,7 +66,6 @@
       <artifactId>quarkus-junit5-mockito</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-spring-web</artifactId>
@@ -84,7 +86,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jaxb</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
@@ -92,20 +93,15 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
-          <artifactId>byte-buddy</artifactId>
           <groupId>net.bytebuddy</groupId>
+          <artifactId>byte-buddy</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
-
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mongodb-client</artifactId>
     </dependency>
-
-    <!-- Scheduler-->
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-scheduler</artifactId>
@@ -115,7 +111,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mongodb-panache</artifactId>
       <version>2.7.1.Final</version>
-
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -128,7 +123,6 @@
       <artifactId>bson</artifactId>
       <version>4.3.4</version>
     </dependency>
-
   </dependencies>
   <build>
     <plugins>
@@ -167,15 +161,9 @@
           <name>native</name>
         </property>
       </activation>
-      <properties>
-        <quarkus.package.type>native</quarkus.package.type>
-        <!-- 4G so the graal vm out of memory error in docker container -->
-        <quarkus.native.additional-build-args>-J-Xmx4G</quarkus.native.additional-build-args>
-      </properties>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>${surefire-plugin.version}</version>
             <executions>
@@ -196,6 +184,10 @@
           </plugin>
         </plugins>
       </build>
+      <properties>
+        <quarkus.native.additional-build-args>-J-Xmx4G</quarkus.native.additional-build-args>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
     </profile>
   </profiles>
 </project>

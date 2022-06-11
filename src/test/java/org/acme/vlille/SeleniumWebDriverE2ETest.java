@@ -41,6 +41,8 @@ public class SeleniumWebDriverE2ETest {
 
 
 	public static final String INPUT_VLILLE_STATION_SEARCH_BAR = "input-vlille-station-search-bar";
+	public static final String INPUT_VLILLE_STATION_FIRST_ID = "vlille-station-id-1";
+
 	private WebDriver driver;
 	private Wait<WebDriver> wait;
 	private int debugId=0;
@@ -82,12 +84,12 @@ public class SeleniumWebDriverE2ETest {
 		// Test AngularJs is downloaded on client selenium chrome.
 		fluentFind(wait, By.id(INPUT_VLILLE_STATION_SEARCH_BAR)).click();
 		debugStep();
-		fluentFind(wait, By.id(INPUT_VLILLE_STATION_SEARCH_BAR)).sendKeys("RUE ROYALE");
+		fluentFind(wait, By.id(INPUT_VLILLE_STATION_SEARCH_BAR)).sendKeys("DELESALLE MEDIATHEQUE");
 		debugStep();
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 
 		// Get the row value.
-		String nbVelodispo = fluentFind(wait, By.cssSelector(".ng-binding:nth-child(3)")).getText();
+		String nbVelodispo = fluentFind(wait, By.id("vlille-station-id-1")).getText();
 
 		Assertions.assertTrue(NumberUtils.isParsable(nbVelodispo));
 
@@ -98,11 +100,7 @@ public class SeleniumWebDriverE2ETest {
 	}
 
 	protected WebElement fluentFind(Wait<WebDriver> wait, By by) {
-		return wait.until(new Function<WebDriver, WebElement>() {
-			public WebElement apply(WebDriver driver) {
-				return driver.findElement(by);
-			}
-		});
+		return wait.until(driver -> driver.findElement(by));
 	}
 
 }
