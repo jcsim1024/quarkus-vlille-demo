@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+
+#    docker run --rm -d -p 4444:4444 -p 6900:5900 -p 9515:9515 --add-host host.docker.internal:host-gateway --name selenium -v /dev/shm:/dev/shm selenium/standalone-chrome:3.141.59-bismuth
+  selenium:
+    image: selenium/standalone-chrome:3.141.59-bismuth
+    ports:
+      - 4444:4444
+      - 6900:5900
+      - 9515:9515
+    volumes:
+      - /dev/shm:/dev/shm
+
+  quarkus:
+    build: 
+      context: /workspaces/main/quarkus-vlille-demo
+      dockerfile: /workspaces/main/quarkus-vlille-demo/src/main/docker/Dockerfile.vlille.jvm
+      target: run-dev-stack
+    image: codespace/quarkus-vlille-demo:1.0-SNAPSHOT
+    ports:
+      - 8080:8080
+
+
