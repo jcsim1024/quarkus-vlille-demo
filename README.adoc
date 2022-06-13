@@ -1,316 +1,53 @@
 = (W I P) Quarkus vlille demo
 
-WIP adding new features:
-
-* clean test
-* [*] create a job schedule job to get data from vlille api and store it a mongo data base 
-* create hibernate orm to retrive it from mongo  
-* expose data to the end point
-* cache data
-* Next step ? :
-** Create a test data base?
-** Kafka cluster?
-** Slice project in 2 different microservice ?
-** add elastic search?
-** create a docker compose up?
-** create github Ci ?
-** cucumber test ?
-** find a vertx use case ?
-** add Auth library ?
-** add video debugging in selenium test?
 
 
+== Description
 
-== Objectives 
+Use the public API of the MEL (Metropole Européenne Lilloise) and display the available bike numbers around my home.
+The main *objective* is to discover new tools and ways of programming.
 
-* Show a *poc* of portable end to end test.
-* Use a late cousin of Spring framework.
-* Discover native compilation.
-* Last but not least: have fun doing it!
+* Native compilation.
+* Reactive Programming.
+* Containerize the application.
+* Use a NoSql database.
+* Remote programming with Github CodeSpace and IntelliJ gateway
 
-Before moving further, to display an **.adoc* file you will need to install a plugin in your IDE, ex: AsciiDoctor Editor for eclipse  +
-Or xref:https://github.com/jcsim1024/quarkus-vlille-demo/blob/master/README.pdf[README.pdf] +
+#Quarkus #CodeSpace #MongoDb #Panache #Mutiny #Docker
 
 == Features
-==== Basically
-* Display VLille's Company *Lille* stations
-* Put VLille first call in cache to avoid reaching the API max call number  
 
-==== Technically whats inside? 
-* One containerized development environment which was really useful for my Quarkus version upgrade. 
-I developed at first with the v0.24 but then I was missing main features and I was able to upgrade to the latest version quite easily.
-** In this container you can compile a native image of the project and by that I mean a linux 64 executable.
-It's worth the trouble if you need a serverless implementation or something that starts super fast, 
- and that has a very light weight.
-* One containerized end 2 end test : SeleniumWebDriverE2ETest
-** We use *selenium web driver plugin* inside the centos maven quarkus container 
-to call the selenium standalone hub , provided that we put them on the same network, to do a headless check.
-The selenium has a chrome instance inside it, and, with the test's driver directions, 
-is able to fufill its purpose which is (mvn test):
-*** test VLille Api availability.
-*** test VLille Api model hasn't change.
-*** test that AngurlarJS is downloaded, and that its filter function is still ok with our implementation.
-** If you need it, you can run the test outside the centos container, directly in your IDE. 
-To do that, you need to change the hostS address and ports accordingly. 
-Both instance have curl inside them use it to test network connection first.
-* One end 2 end bot :  VlilleWSE2E
-** This one uses your chrome browser and will probably require some configuration.
-You will also need to start your app first. It's here to contrast against its containerized version
-and also for debugging.
-* One RestEasyClient calling VLille Api
-* Dockerfiles to build an new image from one that's adapted to run the content provided.
-They are quite self explanatory so I'll let you guys google the "how to deploy"       
- 
-== Components and test interaction
+Spec:
 
-[plantuml, vlille-demo-components, png]
-....
-@startuml
-node "my JVM-8 or +" {
+* Retrieve from MEL API the Ville terminals information
+* Store them in BSON in mongodb
+* Provide an endpoint to display this data.
+** Stations are grouped by name, and only the most recent line is present.
+** During the first call, in non-blocking execution way, we cache the stations and we emulate a long operation  with a thread sleep
 
-}
+=== Build
 
-node "my Maven 3.6" {
+[source,bash]
+----
+./tool.sh build-image
+----
 
-}
-
-node "Docker" {
-	node "centos-quarkus-maven 21.0.0-java11" as c {
-		node "JVM-11" as jvm {
-	
-		}
-		node "GraalVM 21" {
-		
-		}
-		node "Maven 3.6" as mvn {
-		
-		}
-	}
-	node  "selenium/standalone-chrome 3.141.59-bismuth" as gvm {
-		node "Chrome" as ch {
-		
-		}
-		node "selenium node" as sel {
-		
-		}
-		node "selenium hub" as selhub {
-		
-		}
-	}
-}
-
-mvn -> jvm : 1.mvn test
-jvm -> selhub : 2.new RemoteWebDriver
-selhub -> sel : 3 
-sel -> ch : 4.driver.get(http://gvm-mvn-tb:8083)
-ch -left-> jvm  : 5.GET http://gvm-mvn-tb:8083
+=== Start
 
 
+[source,bash]
+----
+./tool.sh env-dev up
+mv compile quarkus:dev
 
-@enduml
-....
+or
 
-== Install
-==== Prerequisites
+./tool.sh env-run up
+----
 
-* Recent version of Docker and by the way this assumes you are familiar with it.
-* Java 8 or plus and JAVA_HOME correctly configured
-* All of the following instructions were made on a Ubuntu 20 but since we use docker it should be ok.
-* For native compilation you will need 5G ram for your centos-maven-quarkus.
-see `quarkus.native.additional-build-args` to restrain its greediness (-> more garbageC cycle though)
- 
-==== Setup
+=== Test
 
-* `docker network create grid`
-* `docker run --rm -d -p 4444:4444 -p 6900:5900 -p 9515:9515  --net grid --add-host host.docker.internal:host-gateway   --name selenium -v /dev/shm:/dev/shm selenium/standalone-chrome:3.141.59-bismuth`
-
-	For later, if this container cant reach the gvm-mnv-tv due to a "...Cannot Bind etc..." then "docker exec -ti selenium bash" + "chromedriver --whitelisted-ips" this will allow ipv6 for the chrome proxy
-
-* `docker run --rm --name gvm-mvn-tb --net grid  -v ~/Dev/XXX-v1-workspace/quarkus/quarkus-vlille-demo:/mnt/vlille-jc -p 8081:8080 -p 8084:8083  -d quay.io/quarkus/centos-quarkus-maven:21.0.0-java11 tail -f /dev/null`
-
-	Start the container & forward port 8081 And 8083 if you want to curl test server
-	tail -f /dev/null is here so the container doesnt auto shutdown
-	We download a lot of stuff its ok to leve "--rm" option out if you want to.
-	Inside:centos-quarkus-maven:21.0.0-java11 GraalVM21 and JDK11 toolbox
-
-* `docker exec  -ti gvm-mvn-tb bash` We are now inside the container -quarkus@3fbcf0d2d455 project-$
-** `cd /mnt/vlille-jc/` Shared volume 
-** `mvn -Dquarkus.http.host=0.0.0.0 compile quarkus:dev` Start the app in embeded JVM-11
-** -> http://localhost:8081/ 
-....
-
-Listening for transport dt_socket at address: 5005
-22:36:18 INFO  [io.qu.ar.pr.BeanProcessor] (build-29) Found unrecommended usage of private members (use package-private instead) in application beans:
-	- @Inject field org.acme.vlille.resource.VlilleWS#vLilleService
-__  ____  __  _____   ___  __ ____  ______ 
- --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
- -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
---\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
-22:36:19 INFO  [io.quarkus] (Quarkus Main Thread) getting-started 1.0-SNAPSHOT on JVM (powered by Quarkus 1.13.4.Final) started in 2.119s. Listening on: http://0.0.0.0:8080
-22:36:19 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
-22:36:19 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, spring-di, spring-web]
-^C22:36:40 INFO  [io.quarkus] (Shutdown thread) getting-started stopped in 0.023s
-....
-
-* ctrl + c to cut process
-** `mvn package -Pnative` Use GraalVM to compile a linux 64 executable
-** `cd target/`
-** `./getting-started-1.0-SNAPSHOT-runner` #That sweet native execution with bash
-** -> http://localhost:8081/ 
-....
-
-22:31:54 INFO  [io.quarkus] (main) getting-started 1.0-SNAPSHOT native (powered by Quarkus 1.13.4.Final) started in 0.012s. Listening on: http://0.0.0.0:8080
-22:31:54 INFO  [io.quarkus] (main) Profile prod activated. 
-22:31:54 INFO  [io.quarkus] (main) Installed features: [cdi, rest-client, resteasy, resteasy-jackson, resteasy-jsonb, spring-di, spring-web]
-^C22:33:25 INFO  [io.quarkus] (Shutdown thread) getting-started stopped in 0.004s
-....
-
-* Notice any differences? one starts in *2.119s* and the other in *0.012s*
-
-== Model
-
-
-[plantuml, vlille-demo-model, png]
-....
-@startuml
-package org.acme.vlille.dto {
-	class StationResponseDTO {
-	  * stations <StationDTO>
-	  * time
-	}
-	class StationDTO {
-	  * nom
-	  * nbvelosdispo
-	}
-StationResponseDTO o--o{  StationDTO
-}
-package  org.acme.vlille.domain {
-	
-	entity Station {
-		* nom
-		* nbvelosdispo
-	}
-
-	entity VlilleDataSet {
-		* nhits
-		* records <Record>
-	}
-
-	entity Record  {
-		* fields <Station>
-	}
-VlilleDataSet o--o{ Record
-Station ||--|| Record
-}
-
-
-
-@enduml
-....
-
-== Feature flow diagram
-
-[plantuml, vlille-demo-flow, png]
-....
-@startuml
-autonumber
-actor "You" as you
-participant "front\nAngularJS" as ft
-participant "back\nQuarkus" as bk
-participant "VLilleApi" as vl
-... Vlille demo app has started ...
-you -> bk: GET localhost:8080
-you <- bk: index.html
-you -> ft: 
-
-note over ft 
-stationApp
-StationListCtrl
-end note
-ft -> bk : GET /api/stations/findALL
-
-activate bk
-note over bk
-findAll()
-performSynchronisation()
-Rest Easy service get dataset 
-end note
-
-bk -> vl :GET https://opendata.lillemetropole.fr/api/records/1.0/search/?\ndataset=vlille-realtime&rows=100&refine.commune=LILLE
-
-note right vl
-"nhits": 110, 
-"parameters": 
-	{"dataset": "vlille-realtime", "refine": {"commune": "LILLE"}, "timezone": "UTC", "rows": 100, "start": 0, "format": "json"},
-"records": [
-	{"datasetid": "vlille-realtime", "recordid": "723289fe50c959f7e63d75b17870762aa8eaddd4", 
-		"fields": {"etat": "EN SERVICE", "etatconnexion": "CONNECTED", "nbvelosdispo": 4, "nbplacesdispo": 14, "commune": "LILLE",
-		 ...}
-	 ...}
-...]
-end note
-
-bk <- vl
-
-note over bk
-Rest Easy json to VlilleDataSet
-metierVersContrat(...) 
-end note
-
-ft <- bk : JSON  StationResponseDTO
-
-
-note over ft
-successCallback()
-display stations 
-end note
-
-@enduml
-....
-
-== Conclusion
-
-* Containerized building image for the win.
-** Having a building environment contained in a pod was a great time savior 
-for my Quarkus version upgrade.   
-At the begining I developed with my old v0.24, I added new features, which required to upgrade to v1.13, 
-but then the *native compilation* stopped working. One Quarkus 1.13 feature didn't compile on 
-the previous GraalVM19... Because, in fact, the *java* serveur can run on JDK 8 and is compatible with JDK11. 
-** Without the container: I would have had to upgrade 
-my JDK (GraalVM 21 needs JDK11), which is quite easy but still have to do it, and maybe later have to 
-roll back to the previous version for my previous project. +
-For GraalVM its
-another story. From my experience, GraalVM was hard to set up on my laptop 
-thus I guess upgrading could have been the same matter... And do all of this without 
-guaranteeing the new stack will compile, plus a risk a of not being able to 
-roll back to the previous working stack! + 
-For this project, upgrading to a newer version could have been a 
-little maneuver that was gonna cost us 51 years!!! (Cooper. Interstellar)
-
-** Whereas, with Docker: update the pom, search and pull the new building image, and there 
-you have it!  5 minutes. 
-
-** Another advantage is that the images are frozen in time: I was able to compile natively
-this old project on first try when I hadn't done it for one year.
- 
-* Containerized end to end tests
-** In contrast to using your own chrome instance, having a fixed version of chrome 
-and selenium makes the test more stable.
-** Tests are now parallelizable.   
-** Tests can be run from Jenkins or Gitlab 
-
-* Native compilation
-** The numbers speaks for themselves. The native server starts 100 times faster then 
-the jvm hosted one.
-** This makes serverless implementation possible for Java possible and its rich 
-ecosystem. I guess that's why its called "Graal" VM.  
-
-== Improvements comming 
-
-* TODO:
-** a mock for Vlille Api to avoid having a none deterministic variable in the test (direct call to Vlille Api)
-** a docker compose file.
-** a selenium video recorder.
-** a Gitlab CI/CD.
-
-
+[source,bash]
+----
+./tool.sh env-test-run up
+----

@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Assertions;
@@ -31,8 +32,8 @@ import org.openqa.selenium.support.ui.Wait;
  * @author jcsimonnet
  *
  */
-@QuarkusTest
 @Slf4j
+@QuarkusTest
 public class SeleniumWebDriverE2ETest {
 
 
@@ -48,7 +49,7 @@ public class SeleniumWebDriverE2ETest {
 	@ConfigProperty(name = "selenium.test-url",defaultValue ="http://selenium:4444/wd/hub")
 	String SELENIUM_URL;
 	
-	@ConfigProperty(name = "quarkus.http.test-url",defaultValue ="http://gvm-mvn-tb:8083/index.html")
+	@ConfigProperty(name = "quarkus.http.test-url",defaultValue ="http://quarkus:8080/index.html")
 	String URL_TEST_APP;
 	
 
