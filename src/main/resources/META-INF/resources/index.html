@@ -151,10 +151,10 @@
                     <th scope="col">Number of bikes</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="stations">
                 <tr ng-repeat="station in stations  | filter:searchText ">
-                    <td id="vlille-station-id-{{station.index}}" >{{station.index}}</td>
-                    <td>{{station.nom}}</td>
+                    <td id="vlille-station-index-{{station.index}}" >{{station.index}}</td>
+                    <td data-name="station-name" >{{station.nom}}</td>
                     <td>{{station.nbvelosdispo}}</td>
                 </tr>
             </tbody>
