@@ -2,19 +2,19 @@ package org.acme.vlille.services;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
-import lombok.SneakyThrows;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.acme.vlille.dto.StationDTO;
 import org.acme.vlille.dto.StationResponseDTO;
-import org.acme.vlille.entity.VlilleDataSet;
 import org.acme.vlille.entity.Record;
 import org.acme.vlille.entity.Station;
+import org.acme.vlille.entity.VlilleDataSet;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.acme.vlille.entity.VlilleDataSet.aggregateByStationNameOrderByTime;
@@ -28,28 +28,31 @@ import static org.acme.vlille.entity.VlilleDataSet.aggregateByStationNameOrderBy
 public class VLilleService {
 
     private static final int CACHE_EVICTION_MIN = 10;
-    private static final List<StationDTO> cachedStations = new ArrayList<>();
+    private static final Map<String,StationDTO> cachedStations = new TreeMap<>() ;
     private static OffsetDateTime lastimeCached = OffsetDateTime.now();
 
     public StationResponseDTO.StationResponseDTOBuilder findAll() {
 
         var respBuilder = StationResponseDTO.builder();
-        switch (Pattern.match(cachedStations,lastimeCached)){
+         var stations = switch (new GuardedPattern(cachedStations,lastimeCached) ){
+            case GuardedPattern p && p.isCached() ->cachedStations ;
+             case GuardedPattern p && p.isOutDated() -> {
+                 cachedStations.clear();
+                 yield retrieveAndCacheStation();
+             }
+             default ->  retrieveAndCacheStation();
+        };
 
-            case CACHED : return respBuilder.stations(cachedStations);
-            case OUTDATED_CACHE: cachedStations.clear();
-            case NO_CACHE:
-            default: return respBuilder.stations(retrieveAndCacheStation());
-        }
+        return respBuilder.stations(stations.values().stream().toList());
     }
 
-    private List<StationDTO> retrieveAndCacheStation() {
-        final Uni<List<StationDTO>> loadedStations = this.getStationMapByName();
+    private Map<String,StationDTO> retrieveAndCacheStation() {
+        final Uni<Map<String,StationDTO>> loadedStations = this.getStationMapByName();
         log.info("---- #1 ----");
         var stationsUni = loadedStations
                 .onItem().transform(stationDTOS -> {
                     AtomicInteger index = new AtomicInteger();
-                    stationDTOS.stream()
+                    stationDTOS.values().stream()
                     .sorted(Comparator.comparing(StationDTO::getNom))
                     .forEach(stationDTO -> stationDTO.setIndex(index.incrementAndGet()));
             return stationDTOS;
@@ -71,19 +74,24 @@ public class VLilleService {
         return stations;
     }
 
-    @SneakyThrows
-    private void ioSimulation(List<StationDTO> stationDTOS) {
-        cachedStations.addAll(stationDTOS);
+
+    private void ioSimulation(Map<String,StationDTO> stationDTOS) {
+        try {
+            Thread.sleep(8000L);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        cachedStations.putAll(stationDTOS);
         lastimeCached = OffsetDateTime.now();
-        Thread.sleep(8000L);
     }
 
-    private Uni<List<StationDTO>> getStationMapByName() {
+    private Uni<Map<String,StationDTO>> getStationMapByName() {
         return aggregateByStationNameOrderByTime()
                 .onItem().transform(VlilleDataSet::getRecords)
                 .onItem().transform(Record::getFields)
                 .onItem().transform(VLilleService::toSationDTO)
-                .collect().asList();
+                .collect()
+                .asMap(StationDTO::getNom,stationDTO -> stationDTO);
 
     }
 
@@ -95,15 +103,19 @@ public class VLilleService {
         return station;
     }
 
-    private enum Pattern {
-        CACHED,NO_CACHE, OUTDATED_CACHE;
 
-        public static Pattern match(List<StationDTO> cachedStations,OffsetDateTime lastimeCached){
-                if (cachedStations.size() ==0)
-                    return NO_CACHE;
-                if (OffsetDateTime.now().minusMinutes(CACHE_EVICTION_MIN).isAfter(lastimeCached))
-                    return OUTDATED_CACHE;
-            return CACHED;
+    @AllArgsConstructor
+    private class GuardedPattern {
+        Map<String,StationDTO> cachedStations;
+        OffsetDateTime lastimeCached;
+
+        boolean isCached(){
+            return cachedStations.size()>0 && !isOutDated() ;
         }
+
+        boolean isOutDated() {
+            return OffsetDateTime.now().minusMinutes(CACHE_EVICTION_MIN).isAfter(lastimeCached);
+        }
+
     }
 }

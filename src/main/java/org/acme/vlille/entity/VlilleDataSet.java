@@ -13,7 +13,7 @@ public class VlilleDataSet  extends ReactivePanacheMongoEntity {
 
 	private Record records;
 
-
+	//TODO maybe use projection because I only use fields
 	private static final String GET_LATEST_STATION_INFO_BY_NAME = """
 			[
 				 {$sort:
