@@ -1,0 +1,23 @@
+name: ex6 b matrix
+on: 
+  workflow_dispatch:
+
+jobs:
+  run-npm-install:
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-latest]
+        version: [14,lts/*]
+    runs-on: ${{ matrix.os }}
+    steps:
+        - name: checkout
+          uses: actions/checkout@v2
+        - name : setup node
+          uses: actions/setup-node@v2
+          with:
+            node-version: '${{ matrix.version }}'
+        - name: run install
+          shell: bash
+          run: |
+            npm install
+            npm test

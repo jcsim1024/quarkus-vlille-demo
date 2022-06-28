@@ -1,0 +1,11 @@
+name: Call a reusable workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/ex4.yml
+    with:
+      NODE_VERSION: 14
+  
