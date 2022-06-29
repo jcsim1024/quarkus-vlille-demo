@@ -24,3 +24,14 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -DskipTests -B package --file pom.xml
+    
+    - name: Build & push Docker image
+      uses: mr-smithers-excellent/docker-build-push@v5
+      with: 
+        image: jcsim/quarkus-vlille-demo-java
+        tags: codespace/quarkus-vlille-demo:1.0-SNAPSHOT, latest
+        target: run-dev-stack
+        registry: docker.io
+        dockerfile: src/main/docker/Dockerfile.vlille.jvm
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
