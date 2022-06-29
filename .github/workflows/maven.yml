@@ -30,7 +30,7 @@ jobs:
       with: 
         image: jcsim/quarkus-vlille-demo-java
         tags: latest
-        target: run-dev-stack
+        target: run-prod
         registry: docker.io
         dockerfile: src/main/docker/Dockerfile.vlille.jvm
         username: ${{ secrets.DOCKER_USERNAME }}

@@ -27,13 +27,23 @@ RUN mvn verify -DskipTests
 COPY . $WD
 RUN mvn package -DskipTests -o
 
-FROM maven as run-dev-stack 
+FROM maven as run-dev-stack
 ENV WD=/usr/app
 WORKDIR $WD
 COPY --from=build /usr/app/ .
 #ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
 ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
+
+
+FROM eclipse-temurin:17 as run-prod 
+ENV WD=/usr/app
+WORKDIR $WD
+COPY --from=build /usr/app/ .
+#ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
+ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
+#ENTRYPOINT [ "tail","-f","/dev/null" ]
+
 
 FROM maven as run-test 
 ENV WD=/usr/app
