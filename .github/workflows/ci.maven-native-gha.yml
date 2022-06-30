@@ -43,6 +43,6 @@ jobs:
         with:
           context: .
           file: src/main/docker/Dockerfile.artefact.vlille.jvm
-          target: run-prod
+          target: run-prod1
           push: true
-          tags: jcsim/quarkus-vlille-demo-java:latest
+          tags: jcsim/quarkus-vlille-demo-java1:latest
