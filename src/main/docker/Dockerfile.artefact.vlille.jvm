@@ -22,9 +22,13 @@
 FROM maven as run-prod1 
 ENV WD=/usr/app
 WORKDIR $WD
-COPY /home/runner/work/quarkus-vlille-demo/quarkus-vlille-demo $WD
-#COPY target/quarkus-app ./target/quarkus-app
+
 RUN ls -al
+COPY . $WD
+RUN ls -al
+
+#COPY target/quarkus-app ./target/quarkus-app
+
 #ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
 ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
