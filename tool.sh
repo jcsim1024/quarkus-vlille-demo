@@ -19,6 +19,23 @@ if [ "build-image" == $1 ]; then
   docker build  -f $file  -t $tag $WD --target run-dev-stack
 fi
 
+if [ "update-build-image" == $1 ]; then
+  
+  file=${WD}/src/main/docker/Dockerfile.vlille.jvm 
+  
+  tag=jcsim/maven-build:latest  
+  
+  target=cache-m2
+
+  registry="${tag}"
+
+  echo docker build  -f $file  -t $tag $WD --target $target
+  docker build  -f $file  -t $tag $WD --target $target
+  cat ~/my_password.txt | docker login --username jcsim --password-stdin
+  echo docker image push $registry
+  docker image push $registry
+fi
+
 if [ "env-test" == $1 ]; then
   file=${WD}/src/test/docker/docker-compose.stack.test.yml
   upDown=$2
