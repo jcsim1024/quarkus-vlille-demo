@@ -21,7 +21,7 @@
 FROM eclipse-temurin:17-alpine as run-prod 
 ENV WD=/usr/app
 WORKDIR $WD
-COPY ./target/quarkus-app ./target/quarkus-app
+COPY target/quarkus-app ./target/quarkus-app
 #ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
 ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
