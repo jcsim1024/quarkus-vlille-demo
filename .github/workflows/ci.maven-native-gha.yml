@@ -13,8 +13,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-
-
       -
         name: Checkout
         uses: actions/checkout@v3
@@ -27,6 +25,11 @@ jobs:
       - 
         name: Build with Maven
         run: mvn -DskipTests -B package --file pom.xml
+      - 
+        name: build docker image 
+        shell: bash
+        run: |
+          ls -al
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
