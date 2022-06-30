@@ -1,0 +1,28 @@
+####
+# This Dockerfile is used in order to build a container that runs the Quarkus application in JVM mode
+#
+# Before building the docker image run:
+#
+# mvn package
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/getting-started-jvm .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/getting-started-jvm
+#
+###
+
+
+# syntax=docker/dockerfile:1
+
+FROM eclipse-temurin:17-alpine as run-prod 
+ENV WD=/usr/app
+WORKDIR $WD
+COPY ./target/quarkus-app ./target/quarkus-app
+#ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
+ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
+#ENTRYPOINT [ "tail","-f","/dev/null" ]
+
