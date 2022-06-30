@@ -24,7 +24,7 @@ ENV WD=/usr/app
 WORKDIR $WD
 COPY . $WD
 #COPY target/quarkus-app ./target/quarkus-app
-RUN ls
+RUN ls -al
 #ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
 ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]

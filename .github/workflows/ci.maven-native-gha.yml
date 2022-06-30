@@ -26,10 +26,11 @@ jobs:
         name: Build with Maven
         run: mvn -DskipTests -B package --file pom.xml
       - 
-        name: build docker image 
+        name: ls -al 
         shell: bash
         run: |
           ls -al
+          pwd
       -
         name: Login to DockerHub
         uses: docker/login-action@v2
