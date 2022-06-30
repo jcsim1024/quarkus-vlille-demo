@@ -48,5 +48,3 @@ jobs:
           target: run-prod
           push: true
           tags: jcsim/quarkus-vlille-demo-java:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
