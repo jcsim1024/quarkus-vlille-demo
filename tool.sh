@@ -69,5 +69,21 @@ if [ "env-test-run" == $1 ]; then
   docker-compose -f $file $upDown
 fi 
   
+if [ "jdeps" == $1 ]; then 
+#jdeps --ignore-missing-deps  -q --multi-release 17 --print-module-deps --class-path target/    target/quarkus-app/app/getting-started-1.0-SNAPSHOT.jar
+#> jre-deps.info
+# pipe the result of running jdeps on the app jar to file
+jdeps --ignore-missing-deps  --multi-release 17 -q  --print-module-deps target/getting-started-1.0-SNAPSHOT-runner.jar > jre-deps.info
 
+fi
 
+if [ "jlink" == $1 ]; then
+
+  jlink --verbose \
+    --compress 2 \
+    --strip-java-debug-attributes \
+    --no-header-files \
+    --no-man-pages \
+    --output jre \
+    --add-modules $(cat jre-deps.info)
+fi
