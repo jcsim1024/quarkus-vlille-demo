@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: src/main/docker/Dockerfile.artefact.vlille.jvm
+          file: src/main/docker/Dockerfile.mvn-gha.vlille.jvm
           target: run-prod
           push: true
           tags: jcsim/quarkus-vlille-demo-java:latest
