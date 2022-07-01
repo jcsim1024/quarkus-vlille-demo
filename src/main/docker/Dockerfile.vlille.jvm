@@ -29,7 +29,7 @@ ENTRYPOINT -jar --enable-preview  target/getting-started-1.0-SNAPSHOT-runner.jar
 FROM eclipse-temurin:17-alpine as run-prod 
 ENV WD=/usr/app
 WORKDIR $WD
-COPY --from=build /usr/app/target/quarkus-app ./target/quarkus-app
+COPY --from=build /usr/app/target/getting-started-1.0-SNAPSHOT-runner.jar ./target/getting-started-1.0-SNAPSHOT-runner.jar
 ENTRYPOINT -jar --enable-preview  target/getting-started-1.0-SNAPSHOT-runner.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
 
