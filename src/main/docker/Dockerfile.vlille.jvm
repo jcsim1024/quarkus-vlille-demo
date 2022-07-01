@@ -23,14 +23,14 @@ ENV WD=/usr/app
 WORKDIR $WD
 COPY --from=build /usr/app/ .
 #ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
-ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
+ENTRYPOINT -jar --enable-preview  target/getting-started-1.0-SNAPSHOT-runner.jar
 
 # Build lighter Prod image
 FROM eclipse-temurin:17-alpine as run-prod 
 ENV WD=/usr/app
 WORKDIR $WD
 COPY --from=build /usr/app/target/quarkus-app ./target/quarkus-app
-ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
+ENTRYPOINT -jar --enable-preview  target/getting-started-1.0-SNAPSHOT-runner.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
 
 # Used to run tests and stop
