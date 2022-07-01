@@ -49,6 +49,18 @@ ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
 
 
+FROM alpine:latest as custome-jre
+WORKDIR /deployment
+
+# copy the custom JRE produced from jlink
+COPY ./jre/ ./jre/
+
+# copy the app
+COPY target/getting-started-1.0-SNAPSHOT-runner.jar target/getting-started-1.0-SNAPSHOT-runner.jar
+
+# run the app on startup
+ENTRYPOINT jre/bin/java -jar --enable-preview  target/getting-started-1.0-SNAPSHOT-runner.jar
+
 FROM jcsim/maven-build:latest as run-test 
 ENV WD=/usr/app
 WORKDIR $WD

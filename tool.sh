@@ -19,6 +19,18 @@ if [ "build-image" == $1 ]; then
   docker build  -f $file  -t $tag $WD --target run-dev-stack
 fi
 
+if [ "build-image-slim" == $1 ]; then
+  
+  file=${WD}/src/main/docker/Dockerfile.vlille.jvm 
+  
+  tag=jcsim/custome-jre:latest
+  
+  echo docker build  -f $file  -t $tag $WD
+  docker build  -f $file  -t $tag $WD --target custome-jre
+  cat ~/my_password.txt | docker login --username jcsim --password-stdin
+  docker image push $tag
+fi
+
 if [ "update-build-image" == $1 ]; then
   
   file=${WD}/src/main/docker/Dockerfile.vlille.jvm 
