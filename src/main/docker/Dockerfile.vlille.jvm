@@ -1,23 +1,9 @@
 ####
-# This Dockerfile is used in order to build a container that runs the Quarkus application in JVM mode
-#
-# Before building the docker image run:
-#
-# mvn package
-#
-# Then, build the image with:
-#
-# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/getting-started-jvm .
-#
-# Then run the container using:
-#
-# docker run -i --rm -p 8080:8080 quarkus/getting-started-jvm
-#
+# build jar for jvm
 ###
 
 
 # syntax=docker/dockerfile:1
-
 FROM maven as cache-m2
 ENV WD=/usr/app
 WORKDIR $WD
@@ -31,29 +17,37 @@ COPY --from=cache-m2 /root/.m2 /root/.m2
 COPY . $WD
 RUN mvn package -DskipTests -o
 
+# Build dev image
 FROM jcsim/maven-build:latest as run-dev-stack
 ENV WD=/usr/app
 WORKDIR $WD
 COPY --from=build /usr/app/ .
 #ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
 ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
-#ENTRYPOINT [ "tail","-f","/dev/null" ]
 
-
+# Build lighter Prod image
 FROM eclipse-temurin:17-alpine as run-prod 
 ENV WD=/usr/app
 WORKDIR $WD
 COPY --from=build /usr/app/target/quarkus-app ./target/quarkus-app
-#ENTRYPOINT ["mvn", "compile", "quarkus:dev"]
 ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
 
-
+# Used to run tests and stop
 FROM jcsim/maven-build:latest as run-test 
 ENV WD=/usr/app
 WORKDIR $WD
 COPY --from=build /usr/app/ .
 COPY --from=build /root/.m2 /root/.m2
 ENTRYPOINT ["mvn", "test"]
-# ENTRYPOINT java -jar /usr/app/target/quarkus-app/quarkus-run.jar
 #ENTRYPOINT [ "tail","-f","/dev/null" ]
+
+# standalone, after running jdeps and jlink for a lighter container
+FROM alpine:latest as custome-jre
+WORKDIR /deployment
+# copy the custom JRE produced from jlink
+COPY ./jre/ ./jre/
+# copy the app
+COPY target/getting-started-1.0-SNAPSHOT-runner.jar target/getting-started-1.0-SNAPSHOT-runner.jar
+# run the app on startup
+ENTRYPOINT jre/bin/java -jar --enable-preview  target/getting-started-1.0-SNAPSHOT-runner.jar
