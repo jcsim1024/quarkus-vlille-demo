@@ -1,17 +1,20 @@
 package org.acme.vlille.job;
 
-import io.quarkus.logging.Log;
-import io.quarkus.scheduler.Scheduled;
+import java.time.OffsetDateTime;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.acme.vlille.vlille.api.RawVlilleServiceRestEasy;
 import org.acme.vlille.vlille.entity.RawVlilleDataSetEntity;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.time.OffsetDateTime;
+import io.quarkus.scheduler.Scheduled;
+import lombok.extern.slf4j.Slf4j;
 
 
 @ApplicationScoped
+@Slf4j
 public class TrackRawVlilleDataset {
 
     @Inject
@@ -23,10 +26,10 @@ public class TrackRawVlilleDataset {
         var dataset = rawVlilleServiceRestEasy.getDataSet();
         OffsetDateTime now = OffsetDateTime.now();
 
-        Log.debug(dataset);
+        log.debug(dataset);
 
-        dataset.getRecords().forEach(recordJsonValue -> {
-             buildVlilleDataSetEntity(now, recordJsonValue.toString())
+        dataset.getRecords().forEach(recordDocument -> {
+             buildVlilleDataSetEntity(now, recordDocument.toString())
                      .persist().subscribe();
         });
     }
