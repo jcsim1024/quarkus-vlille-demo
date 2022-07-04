@@ -14,7 +14,8 @@ bin/
 nb-configuration.xml
 
 # Visual Studio Code
-.vscode
+
+.vscode/settings.json
 
 # OSX
 .DS_Store
@@ -41,3 +42,4 @@ src/main/resources/META-INF/resources/fonts/glyphicons-halflings-regular.svg
 src/main/resources/META-INF/resources/fonts/glyphicons-halflings-regular.eot
 history.txt
 jre
+main.code-workspace

@@ -1,0 +1,47 @@
+{
+    "java.jdt.ls.vmargs": "--enable-preview -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m -javaagent:\"/home/codespace/.vscode-remote/extensions/vscjava.vscode-lombok-1.0.1/server/lombok.jar\"",
+	"remote.portsAttributes": {
+		"8080": {
+			"protocol": "http"
+		}
+	},
+	"java.project.sourcePaths": [
+		"/workspaces/main/quarkus-vlille-demo"
+	],
+	"terminal.integrated.cwd": "/workspaces/main/quarkus-vlille-demo",
+	"java.eclipse.downloadSources": true,
+	"java.import.exclusions": [
+		"**/aws-codedeploy-github-actions-deployment/**",
+		"**/aws-github-actions/**",
+		"**/quarkus-quickstarts/**",
+		"**/node_modules/**",
+		"**/.metadata/**",
+		"**/archetype-resources/**",
+		"**/META-INF/maven/**"
+	],
+	"maven.pomfile.globPattern": "**/quarkus-vlille-demo/pom.xml",
+	"maven.terminal.useJavaHome": true,
+	"java.trace.server": "verbose",
+	"java.typeHierarchy.lazyLoad": true,
+	"java.server.launchMode": "Standard",
+	"java.saveActions.organizeImports": true,
+	"java.project.resourceFilters": [
+		"aws-codedeploy-github-actions-deployment",
+		"aws-github-actions",
+		"quarkus-quickstarts",
+		"node_modules",
+		".git"
+	],
+	"java.maven.downloadSources": true,
+	"maven.executable.path": "mvn",
+	"maven.executable.preferMavenWrapper": false,
+	"java.dependency.showMembers": true,
+	"java.configuration.runtimes": [
+		{
+			"name": "JavaSE-17",
+			"path": "/opt/java/17.0.2",
+			"default": true
+		}
+	],
+	"java.jdt.ls.java.home": "/opt/java/17.0.2"
+}

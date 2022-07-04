@@ -18,7 +18,7 @@ public class TrackRawVlilleDataset {
     @RestClient
     RawVlilleServiceRestEasy rawVlilleServiceRestEasy;
 
-    @Scheduled(every = "10m" , delay = 30L)
+    @Scheduled(every = "10m" , delay = 1L)
     void pullDataset() {
         var dataset = rawVlilleServiceRestEasy.getDataSet();
         OffsetDateTime now = OffsetDateTime.now();

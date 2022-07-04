@@ -77,7 +77,7 @@ public class VLilleService {
 
     private void ioSimulation(Map<String,StationDTO> stationDTOS) {
         try {
-            Thread.sleep(8000L);
+            Thread.sleep(1000L);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
