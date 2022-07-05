@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @ApplicationScoped
-@Slf4j
 public class TrackRawVlilleDataset {
 
     @Inject
@@ -26,7 +25,6 @@ public class TrackRawVlilleDataset {
         var dataset = rawVlilleServiceRestEasy.getDataSet();
         OffsetDateTime now = OffsetDateTime.now();
 
-        log.debug(dataset);
 
         dataset.getRecords().forEach(recordDocument -> {
              buildVlilleDataSetEntity(now, recordDocument.toString())
