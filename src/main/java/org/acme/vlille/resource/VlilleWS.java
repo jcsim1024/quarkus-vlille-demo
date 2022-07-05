@@ -17,10 +17,9 @@ public class VlilleWS {
 
 
 	@Inject
-	private VLilleService vLilleService;
+	VLilleService vLilleService;
 
 
-	@Path("/findAll")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public StationResponseDTO findAll() {

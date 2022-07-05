@@ -99,3 +99,7 @@ if [ "jlink" == $1 ]; then
     --output jre \
     --add-modules $(cat jre-deps.info)
 fi
+
+if [ "hosts" == $1 ]; then
+  echo -e '127.0.0.1\tmongo' | sudo tee -a /etc/hosts
+fi

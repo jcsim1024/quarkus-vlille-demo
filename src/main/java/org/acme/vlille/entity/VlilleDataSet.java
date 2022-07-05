@@ -37,7 +37,7 @@ public class VlilleDataSet  extends ReactivePanacheMongoEntity {
 
 	public static Multi<VlilleDataSet> aggregateByStationNameOrderByTime() {
 		var specifications = MongoHelper.getListDocument(GET_LATEST_STATION_INFO_BY_NAME);
-
+		
 		return VlilleDataSet
 				.mongoCollection()
 				.withDocumentClass(VlilleDataSet.class)

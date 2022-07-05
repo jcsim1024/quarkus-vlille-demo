@@ -12,7 +12,7 @@ var app = angular.module("stationApp", []);
         function _refreshPageData() {
           $http({
             method: 'GET',
-            url: '../api/stations/findAll'
+            url: '../api/stations'
           }).then(function successCallback(response) {
             $scope.stations = response.data.stations;
           }, function errorCallback(response) {

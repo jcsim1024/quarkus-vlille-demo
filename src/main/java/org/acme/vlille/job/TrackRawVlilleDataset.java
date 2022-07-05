@@ -5,22 +5,23 @@ import java.time.OffsetDateTime;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import lombok.extern.slf4j.Slf4j;
 import org.acme.vlille.vlille.api.RawVlilleServiceRestEasy;
 import org.acme.vlille.vlille.entity.RawVlilleDataSetEntity;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import io.quarkus.scheduler.Scheduled;
-import lombok.extern.slf4j.Slf4j;
 
 
 @ApplicationScoped
+@Slf4j
 public class TrackRawVlilleDataset {
 
     @Inject
     @RestClient
     RawVlilleServiceRestEasy rawVlilleServiceRestEasy;
 
-    @Scheduled(every = "10m" , delay = 1L)
+    @Scheduled(every = "10m")
     void pullDataset() {
         var dataset = rawVlilleServiceRestEasy.getDataSet();
         OffsetDateTime now = OffsetDateTime.now();
@@ -28,7 +29,8 @@ public class TrackRawVlilleDataset {
 
         dataset.getRecords().forEach(recordDocument -> {
              buildVlilleDataSetEntity(now, recordDocument.toString())
-                     .persist().subscribe();
+                     .persist().subscribe().with(item -> {log.info(String.valueOf(item));},
+                             failure -> {log.error(String.valueOf(failure)) ;} );
         });
     }
 
